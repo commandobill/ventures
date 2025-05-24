@@ -35,15 +35,20 @@ function parser:parse_exp_areas(lines)
         return self.parsed_ventures;
     end
 
-    -- Clear old results
-    self.parsed_ventures = {};
+    -- Build a lookup for existing ventures by level_range
+    local existing = {}
+    for _, v in ipairs(self.parsed_ventures or {}) do
+        existing[v.level_range] = v
+    end
+
+    local new_ventures = {}
     exp_text = exp_text:gsub("^EXP Areas:%s*", "");
 
     -- Parse each venture entry
     for part in exp_text:gmatch("[^,]+") do
         local level_range = part:match("%((%d+%-%d+)%)");
         local completion = part:match("@(%d+)%%");
-        local area = part:gsub("%(.-%)", ""):gsub("@%d+%%", ""):gsub("^%s*(.-)%s*$", "%1");
+        local area = part:gsub("%b()", ""):gsub("@%d+%%", ""):gsub("^%s*(.-)%s*$", "%1");
         local vnm_position = nil;
         local vnm_zone = vnm_data[area];
 
@@ -63,10 +68,17 @@ function parser:parse_exp_areas(lines)
                 completion = completion or '0',
                 loc = vnm_position and string.format("(%s)", vnm_position) or ""
             };
-            table.insert(self.parsed_ventures, venture:new(venture_data));
+            local v = existing[level_range]
+            if v then
+                v:update(venture_data)
+                table.insert(new_ventures, v)
+            else
+                table.insert(new_ventures, venture:new(venture_data))
+            end
         end
     end
 
+    self.parsed_ventures = new_ventures;
     return self.parsed_ventures;
 end
 
