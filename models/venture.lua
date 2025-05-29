@@ -3,6 +3,7 @@ local Venture = {
     area = '',
     completion = 0,
     location = '',
+    notes = '',
     last_update_time = 0,
     last_increment_time = 0
 };
@@ -15,6 +16,7 @@ function Venture:new(data)
     instance.area = data.area;
     instance.completion = tonumber(data.completion) or 0;
     instance.location = data.loc;
+    instance.notes = data.notes;
     instance.last_update_time = now;
     instance.last_increment_time = 0; -- Start as red
     return instance;
@@ -34,6 +36,7 @@ function Venture:update(data)
     self.area = data.area;
     self.completion = new_completion;
     self.location = data.loc;
+    self.notes = data.notes;
     self.last_update_time = now;
 end
 
@@ -55,6 +58,11 @@ end
 -- Get location
 function Venture:get_location()
     return self.location;
+end
+
+-- Get notes
+function Venture:get_notes()
+    return self.notes;
 end
 
 return Venture;

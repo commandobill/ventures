@@ -50,12 +50,14 @@ function parser:parse_exp_areas(lines)
         local completion = part:match("@(%d+)%%");
         local area = part:gsub("%b()", ""):gsub("@%d+%%", ""):gsub("^%s*(.-)%s*$", "%1");
         local vnm_position = nil;
+        local vnm_notes = nil;
         local vnm_zone = vnm_data[area];
 
         if vnm_zone then
             for _, vnm in ipairs(vnm_zone) do
                 if vnm.level_range == level_range then
                     vnm_position = vnm.position;
+                    vnm_notes = vnm.notes;
                     break;
                 end
             end
@@ -66,7 +68,8 @@ function parser:parse_exp_areas(lines)
                 level_range = level_range,
                 area = area,
                 completion = completion or '0',
-                loc = vnm_position and string.format("(%s)", vnm_position) or ""
+                loc = vnm_position and string.format("(%s)", vnm_position) or "",
+                notes = vnm_notes and string.format("(%s)", vnm_notes) or ""
             };
             local v = existing[level_range]
             if v then

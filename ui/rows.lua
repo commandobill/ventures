@@ -53,8 +53,14 @@ function rows:draw_venture_row(venture)
     imgui.PopStyleColor();
     imgui.NextColumn();
 
-    -- Location
-    imgui.Text(venture:get_location());
+    -- Location and Notes
+    local location = venture:get_location()
+    local notes = venture:get_notes()
+    if notes and notes ~= "" then
+        imgui.Text(location .. " - " .. notes)
+    else
+        imgui.Text(location)
+    end
     imgui.NextColumn();
 end
 
