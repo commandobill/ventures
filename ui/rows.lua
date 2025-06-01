@@ -6,16 +6,19 @@ local rows = {};
 -- Get indicator symbol and color based on time since last completion change
 local function get_indicator_and_color(venture)
     local now = os.time()
+    local stopped = config.get('stopped_indicator')
+    local fast = config.get('fast_indicator')
+    local slow = config.get('slow_indicator')
     if not venture.last_increment_time or venture.last_increment_time == 0 then
-        return 'x', {1.0, 0.0, 0.0, 1.0} -- Red (start or after reset)
+        return stopped, {1.0, 0.0, 0.0, 1.0} -- Red (start or after reset)
     end
     local elapsed = (now - venture.last_increment_time) / 60
     if elapsed < 7 then
-        return '^', {0.0, 1.0, 0.0, 1.0} -- Green
+        return fast, {0.0, 1.0, 0.0, 1.0} -- Green
     elseif elapsed < 15 then
-        return '=', {1.0, 1.0, 0.0, 1.0} -- Yellow
+        return slow, {1.0, 1.0, 0.0, 1.0} -- Yellow
     else
-        return 'x', {1.0, 0.0, 0.0, 1.0} -- Red
+        return stopped, {1.0, 0.0, 0.0, 1.0} -- Red
     end
 end
 

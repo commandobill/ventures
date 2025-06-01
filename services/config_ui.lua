@@ -77,6 +77,27 @@ function config_ui:draw()
             imgui.Text(string.format("File: %s", sound_files[selected]));
         end
 
+        imgui.Separator();  -- visual divider between sections
+        
+        -- Indicator Characters
+        local stopped_indicator = { config.get('stopped_indicator')}
+        imgui.PushItemWidth(100)
+        if imgui.InputText('Stopped Indicator', stopped_indicator, 2) then
+            config.set('stopped_indicator', stopped_indicator[1])
+        end
+        imgui.PopItemWidth()
+        local fast = { config.get('fast_indicator')}
+        imgui.PushItemWidth(100)
+        if imgui.InputText('Fast Indicator', fast, 2) then
+            config.set('fast_indicator', fast[1])
+        end
+        imgui.PopItemWidth()
+        local slow = { config.get('slow_indicator')}
+        imgui.PushItemWidth(100)
+        if imgui.InputText('Slow Indicator', slow, 2) then
+            config.set('slow_indicator', slow[1])
+        end
+        imgui.PopItemWidth()
     end
     imgui.End();
     config.set('show_config_gui', open[1])
