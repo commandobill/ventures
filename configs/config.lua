@@ -11,6 +11,9 @@ local default_settings = T{
     sort_ascending = false;
     debug = false;
     show_config_gui = false;
+    stopped_indicator = '.';
+    fast_indicator = '^';
+    slow_indicator = '-';
 };
 
 local settings = require('settings');
