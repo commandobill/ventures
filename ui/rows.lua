@@ -27,8 +27,16 @@ function rows:draw_venture_row(venture)
     imgui.Text(venture:get_level_range());
     imgui.NextColumn();
 
-    -- Area
+    -- Area with tooltip
     imgui.Text(venture:get_area());
+    if imgui.IsItemHovered() then
+        local equipment = venture:get_equipment()
+        if equipment and equipment ~= "" then
+            imgui.BeginTooltip()
+            imgui.Text("Equipment: " .. equipment)
+            imgui.EndTooltip()
+        end
+    end
     imgui.NextColumn();
 
     -- Completion with time indicator

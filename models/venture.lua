@@ -5,7 +5,10 @@ local Venture = {
     location = '',
     notes = '',
     last_update_time = 0,
-    last_increment_time = 0
+    last_increment_time = 0,
+    equipment = '',
+    element = '',
+    crest = ''
 };
 
 -- Create new venture instance
@@ -16,6 +19,9 @@ function Venture:new(data)
     instance.area = data.area;
     instance.completion = tonumber(data.completion) or 0;
     instance.location = data.loc;
+    instance.equipment = data.equipment or '';
+    instance.element = data.element or '';
+    instance.crest = data.crest or '';
     instance.notes = data.notes;
     instance.last_update_time = now;
     instance.last_increment_time = 0; -- Start as red
@@ -36,7 +42,11 @@ function Venture:update(data)
     self.area = data.area;
     self.completion = new_completion;
     self.location = data.loc;
+    self.equipment = data.equipment or self.equipment;
+    self.element = data.element or self.element;
+    self.crest = data.crest or self.crest;
     self.notes = data.notes;
+
     self.last_update_time = now;
 end
 
@@ -58,6 +68,22 @@ end
 -- Get location
 function Venture:get_location()
     return self.location;
+end
+
+
+-- Get equipment
+function Venture:get_equipment()
+    return self.equipment;
+end
+
+-- Get element
+function Venture:get_element()
+    return self.element;
+end
+
+-- Get crest
+function Venture:get_crest()
+    return self.crest;
 end
 
 -- Get notes
