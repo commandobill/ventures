@@ -78,7 +78,7 @@ function parser:parse_exp_areas(lines)
                 equipment = vnm_equipment or "",
                 element = vnm_element or "",
                 crest = vnm_crest or "",
-                notes = vnm_notes and string.format("(%s)", vnm_notes) or ""
+                notes = vnm_notes and string.format("%s", vnm_notes) or ""
             };
             local v = existing[level_range]
             if v then
