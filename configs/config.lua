@@ -14,6 +14,7 @@ local default_settings = T{
     stopped_indicator = '.';
     fast_indicator = '^';
     slow_indicator = '-';
+    notes_visible = false;
 };
 
 local settings = require('settings');

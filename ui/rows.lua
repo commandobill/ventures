@@ -87,13 +87,22 @@ function rows:draw_venture_row(venture)
 
     -- Location and Notes
     local location = venture:get_location()
-    imgui.Text(location);
-    if imgui.IsItemHovered() then
-        local notes = venture:get_notes()
+    local notes = venture.get_notes and venture:get_notes() or nil
+    local notes_visible = config.get('notes_visible')
+    if notes_visible then
+        imgui.Text(location)
+        if imgui.IsItemHovered() then
+            if notes and notes ~= "" then
+                imgui.BeginTooltip()
+                imgui.Text(notes)
+                imgui.EndTooltip()
+            end
+        end
+    else
         if notes and notes ~= "" then
-            imgui.BeginTooltip()
-            imgui.Text(notes)
-            imgui.EndTooltip()
+            imgui.Text(location .. " - " .. notes)
+        else
+            imgui.Text(location)
         end
     end
     imgui.NextColumn();

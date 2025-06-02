@@ -43,6 +43,12 @@ function config_ui:draw()
             config.set('enable_alerts', alerts[1]);
         end
 
+        -- Notes Tooltip Visible Toggle
+        local notes_visible = { config.get('notes_visible') }
+        if imgui.Checkbox('Show Notes as Tooltip', notes_visible) then
+            config.set('notes_visible', notes_visible[1])
+        end
+
         imgui.Separator();  -- visual divider between sections
 
         -- Play Audio
@@ -98,6 +104,8 @@ function config_ui:draw()
             config.set('slow_indicator', slow[1])
         end
         imgui.PopItemWidth()
+
+
     end
     imgui.End();
     config.set('show_config_gui', open[1])
