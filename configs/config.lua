@@ -11,10 +11,13 @@ local default_settings = T{
     sort_ascending = false;
     debug = false;
     show_config_gui = false;
-    stopped_indicator = '.';
+    stopped_indicator = 'x';
     fast_indicator = '^';
-    slow_indicator = '-';
+    slow_indicator = '=';
     notes_visible = false;
+    level_range_label = 'Level Range';
+    area_label = 'Area';
+    completion_label = 'Completion';
 };
 
 local settings = require('settings');

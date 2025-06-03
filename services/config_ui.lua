@@ -105,6 +105,22 @@ function config_ui:draw()
         end
         imgui.PopItemWidth()
 
+        imgui.Separator();  -- visual divider between sections
+
+        -- Header Label Editors
+        local level_range_label = { config.get('level_range_label') or 'Level Range' }
+        if imgui.InputText('Level Range Header', level_range_label, 64) then
+            config.set('level_range_label', level_range_label[1])
+        end
+        local area_label = { config.get('area_label') or 'Area' }
+        if imgui.InputText('Area Header', area_label, 64) then
+            config.set('area_label', area_label[1])
+        end
+        local completion_label = { config.get('completion_label') or 'Completion' }
+        if imgui.InputText('Completion Header', completion_label, 64) then
+            config.set('completion_label', completion_label[1])
+        end
+
 
     end
     imgui.End();

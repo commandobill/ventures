@@ -1,5 +1,6 @@
 local imgui = require('imgui');
 local sort_button = require('ui.sort_button');
+local config = require('configs.config');
 
 local headers = {};
 
@@ -16,15 +17,15 @@ end
 
 -- Draw all headers
 function headers:draw()
-    sort_button:draw_sort_button('Level Range', 'level');
+    sort_button:draw_sort_button(config.get(level_range_label) or 'Level Range', 'level');
     imgui.NextColumn();
-    sort_button:draw_sort_button('Area', 'area');
+    sort_button:draw_sort_button(config.get(area_label) or 'Area', 'area');
     imgui.NextColumn();
-    sort_button:draw_sort_button('Completion', 'completion');
+    sort_button:draw_sort_button(config.get(completion_label) or 'Completion', 'completion');
     imgui.NextColumn();
     headers:draw_location_header();
     imgui.NextColumn();
     imgui.Separator();
 end
 
-return headers; 
+return headers;
