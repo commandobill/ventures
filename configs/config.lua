@@ -11,14 +11,24 @@ local default_settings = T{
     sort_ascending = false;
     debug = false;
     show_config_gui = false;
-    stopped_indicator = '.';
+    stopped_indicator = 'x';
     fast_indicator = '^';
-    slow_indicator = '-';
+    slow_indicator = '=';
     notes_visible = false;
 };
 
 local settings = require('settings');
 local config_data = settings.load(default_settings);  -- Only holds settings data
+
+--=============================================================================
+-- Registers a callback for the settings to monitor for character switches.
+--=============================================================================
+settings.register('settings', 'settings_update', function (s)
+    if (s ~= nil) then
+        config_data = s;
+    end
+    settings.save();
+end);
 
 -- Define a helper table to wrap logic around the config data
 local config = {};
