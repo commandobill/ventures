@@ -11,7 +11,7 @@ local config = require('configs.config');
 local parser = require('services.parser');
 local sorter = require('services.sorter');
 local alert = require('services.alert');
-local config_ui = require('services.config_ui')
+local config_ui = require('services.config_ui');
 local ui = require('ui.window');
 local time = require('utils.time');
 
@@ -70,7 +70,7 @@ ashita.events.register('command', 'ventures_command_cb', function(e)
 end);
 
 -- Handle text input
-ashita.events.register('text_in', 'ventures_textin_cb', function(e)
+ashita.events.register('text_in', 'ventures_textin_cb', function(e) 
     if not parser.capture_active then
         return;
     end
