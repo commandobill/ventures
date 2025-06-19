@@ -48,6 +48,12 @@ function config_ui:draw()
         if imgui.Checkbox('Show Notes as Tooltip', notes_visible) then
             config.set('notes_visible', notes_visible[1])
         end
+        
+        -- Suppress Sorting Text Description (Asc) (Desc)
+        local hide_sorting_text = { config.get('hide_sorting_text') }
+        if imgui.Checkbox('Hide Sorting Text', hide_sorting_text) then
+            config.set('hide_sorting_text', hide_sorting_text[1])
+        end
 
         imgui.Separator();  -- visual divider between sections
 
