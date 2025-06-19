@@ -20,7 +20,8 @@ function ui:draw(ventures)
     local window_title = window:get_title(highest.completion, highest.area, highest.position);
 
     imgui.SetNextWindowSize(window.size, ImGuiCond_FirstUseEver);
-    if imgui.Begin(window_title, window.is_open) then
+    local open = { config.get('show_gui') };
+    if imgui.Begin(window_title, open) then
         -- Set window styles
         imgui.PushStyleColor(ImGuiCol_WindowBg, {0,0.06,0.16,0.9});
         imgui.PushStyleColor(ImGuiCol_TitleBg, {0,0.06,0.16,0.7});
@@ -38,6 +39,7 @@ function ui:draw(ventures)
 
     window:update_state(imgui);
     imgui.End();
+    config.set('show_gui', open[1])
 end
 
 return ui;
