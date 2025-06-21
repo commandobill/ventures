@@ -27,9 +27,9 @@ function config_ui:draw()
     if not config.get('show_config_gui') then
         return;
     end
-    imgui.SetNextWindowSize({400, 400}, ImGuiCond_FirstUseEver);
+    --imgui.SetNextWindowSize({400, 400}, ImGuiCond_FirstUseEver);
     local open = { config.get('show_config_gui') };
-    if imgui.Begin('Configuration##simpleconfig', open) then
+    if imgui.Begin('Configuration##simpleconfig', open, ImGuiWindowFlags_AlwaysAutoResize) then
 
         -- Show GUI
         local gui = { config.get('show_gui') };
@@ -91,6 +91,20 @@ function config_ui:draw()
 
         imgui.Separator();  -- visual divider between sections
         
+        -- Alert Threshold Slider
+        local alert_threshold = { config.get('alert_threshold') }
+        if imgui.SliderInt('Alert Threshold', alert_threshold, 1, 100) then
+            config.set('alert_threshold', alert_threshold[1]);
+        end
+
+        -- Sound Threshold
+        local audio_alert_threshold = { config.get('audio_alert_threshold') }
+        if imgui.SliderInt('Audio Threshold', audio_alert_threshold, 1, 100) then
+            config.set('audio_alert_threshold', audio_alert_threshold[1]);
+        end
+
+        imgui.Separator();  -- visual divider between sections
+
         -- Indicator Characters
         local stopped_indicator = { config.get('stopped_indicator')}
         imgui.PushItemWidth(100)
