@@ -15,6 +15,10 @@ local default_settings = T{
     fast_indicator = '^';
     slow_indicator = '=';
     notes_visible = false;
+    level_range_label = 'Level Range';
+    area_label = 'Area';
+    completion_label = 'Completion';
+    hide_sorting_text = false;
 };
 
 local settings = require('settings');
