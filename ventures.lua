@@ -137,11 +137,12 @@ ashita.events.register('packet_in', 'packet_in_cb', function(e)
         return;
     end
 
-    -- Wait for first 0x001F packet after zoning starts
-    if zoning and not zone_loaded and id == 0x001F then
+    -- Wait for first 0x111 packet after zoning starts
+    if zoning and not zone_loaded and id == 0x111 then
         zone_loaded = true;
         zoning = false;
         auto_refresh_timer = time.now();
+        parser:send_ventures_command();
         return;
     end
 end);
