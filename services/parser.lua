@@ -9,8 +9,27 @@ local parser = {
     capture_timeout = 5,
     max_lines = 50,
     header_detected = false,
-    parsed_ventures = {}
+    parsed_ventures = {},
+    packet = struct.pack('bbbbbbbbbbbbbbbbbbbb',
+    0xB5, 0x08, 0x81, 0x01, 0x00, 0x00,  -- Reserved
+    0x21, 0x76, 0x65, 0x6E, 0x74, 0x75, 0x72, 0x65, 0x73, 0x20, 0x65, 0x78, 0x70, 0x00):totable()
 };
+
+-- GetEventSystemActive Code From Thorny
+local pEventSystem = ashita.memory.find('FFXiMain.dll', 0, "A0????????84C0741AA1????????85C0741166A1????????663B05????????0F94C0C3", 0, 0);
+local function GetEventSystemActive()
+    if (pEventSystem == 0) then
+        return false;
+    end
+    local ptr = ashita.memory.read_uint32(pEventSystem + 1);
+    if (ptr == 0) then
+        return false;
+    end
+
+    return (ashita.memory.read_uint8(ptr) == 1);
+end
+
+
 
 -- Parse EXP Areas from captured lines
 function parser:parse_exp_areas(lines)
@@ -98,14 +117,20 @@ end
 function parser:send_ventures_command()
     local zone_id = AshitaCore:GetMemoryManager():GetParty():GetMemberZone(0);
     if zone_id == 0 then
-        return;
+        return false;
     end
 
-    AshitaCore:GetChatManager():QueueCommand(1, '/say !ventures');
-    self.capture_active = true;
-    self.capture_lines = {};
-    self.capture_start_time = os.clock();
-    self.header_detected = false;
+    --AshitaCore:GetChatManager():QueueCommand(1, '/say !ventures');
+    if not GetEventSystemActive() then
+        AshitaCore:GetPacketManager():AddOutgoingPacket(0xB5, parser.packet);
+        self.capture_active = true;
+        self.capture_lines = {};
+        self.capture_start_time = os.clock();
+        self.header_detected = false;
+        return true;
+    else
+        return false;
+    end
 end
 
 -- Get parsed ventures

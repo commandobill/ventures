@@ -1,6 +1,6 @@
 addon.name    = 'ventures';
 addon.author  = 'Commandobill, Seekey, and Phatty';
-addon.version = '1.4';
+addon.version = '1.5.1';
 addon.desc    = 'Capture and parse EXP Areas cleanly from !ventures response';
 
 require('common');
@@ -85,11 +85,6 @@ ashita.events.register('text_in', 'ventures_textin_cb', function(e)
 
     local mode = e.mode % 256;
 
-    if (mode == 1) and string.find(e.message, "!ventures") then
-        e.blocked = true;
-        return;
-    end
-
     if not parser.header_detected then
         if (mode == 121) and string.find(e.message, "=== Today's Goblin Ventures ===") then
             parser.header_detected = true;
@@ -98,7 +93,8 @@ ashita.events.register('text_in', 'ventures_textin_cb', function(e)
         return;
     end
 
-    if mode == 9 then
+    if mode == 9 and string.find(e.message, "%(%d+%-%d+%)") then
+
         e.blocked = true;
         local entry = { mode = mode, message = e.message };
         table.insert(parser.capture_lines, entry);
@@ -141,8 +137,9 @@ ashita.events.register('packet_in', 'packet_in_cb', function(e)
     if zoning and not zone_loaded and id == 0x111 then
         zone_loaded = true;
         zoning = false;
-        auto_refresh_timer = time.now();
-        parser:send_ventures_command();
+        if parser:send_ventures_command() then
+            auto_refresh_timer = time.now();
+        end
         return;
     end
 end);
@@ -163,8 +160,11 @@ ashita.events.register('d3d_present', 'ventures_present_cb', function()
     end
 
     if time.has_elapsed(auto_refresh_timer, config.get('auto_refresh_interval')) then
-        auto_refresh_timer = time.now();
-        parser:send_ventures_command();
+        
+        if parser:send_ventures_command() then
+            auto_refresh_timer = time.now();
+        end
+
     end
 
     if parser.capture_active and time.has_elapsed(parser.capture_start_time, parser.capture_timeout) then
