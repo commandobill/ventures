@@ -1,6 +1,6 @@
 addon.name    = 'ventures';
 addon.author  = 'Commandobill, Seekey, and Phatty';
-addon.version = '1.5.1';
+addon.version = '1.5.2';
 addon.desc    = 'Capture and parse EXP Areas cleanly from !ventures response';
 
 require('common');
@@ -134,7 +134,7 @@ ashita.events.register('packet_in', 'packet_in_cb', function(e)
     end
 
     -- Wait for first 0x111 packet after zoning starts
-    if zoning and not zone_loaded and id == 0x111 then
+    if zoning and not zone_loaded and id == 0x05E then
         zone_loaded = true;
         zoning = false;
         if parser:send_ventures_command() then
