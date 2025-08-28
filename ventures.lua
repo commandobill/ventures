@@ -1,6 +1,6 @@
 addon.name    = 'ventures';
 addon.author  = 'Commandobill, Seekey, and Phatty';
-addon.version = '1.5.2';
+addon.version = '1.5.3';
 addon.desc    = 'Capture and parse EXP Areas cleanly from !ventures response';
 
 require('common');
@@ -93,7 +93,7 @@ ashita.events.register('text_in', 'ventures_textin_cb', function(e)
         return;
     end
 
-    if mode == 9 and string.find(e.message, "%(%d+%-%d+%)") then
+    if mode == 9 and (string.find(e.message, "%(%d+%-%d+%)") or string.find(e.message, "HVNM")) then
 
         e.blocked = true;
         local entry = { mode = mode, message = e.message };
