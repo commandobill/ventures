@@ -1,6 +1,6 @@
 addon.name    = 'ventures';
 addon.author  = 'Commandobill, Seekey, and Phatty';
-addon.version = '1.5.3';
+addon.version = '1.5.4';
 addon.desc    = 'Capture and parse EXP Areas cleanly from !ventures response';
 
 require('common');
@@ -99,7 +99,7 @@ ashita.events.register('text_in', 'ventures_textin_cb', function(e)
         local entry = { mode = mode, message = e.message };
         table.insert(parser.capture_lines, entry);
 
-        if string.find(e.message, "60-69:") then
+        if string.find(e.message, "HVNM:") then
             parser.capture_active = false;
             local ventures = parser:parse_exp_areas(parser.capture_lines);
             for _, venture in ipairs(ventures) do

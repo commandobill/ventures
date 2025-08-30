@@ -44,13 +44,11 @@ function parser:parse_exp_areas(lines)
                 found_exp_start = true;
             end
         elseif found_exp_start then
-            exp_text = exp_text .. ' ' .. entry.message;
-            break;
+            exp_text = exp_text .. ', ' .. entry.message;
         end
     end
 
     if exp_text == '' then
-        -- print(chat.header('ventures') .. chat.error('EXP Areas section not found.'));
         return self.parsed_ventures;
     end
 
@@ -62,9 +60,11 @@ function parser:parse_exp_areas(lines)
 
     local new_ventures = {}
     exp_text = exp_text:gsub("^EXP Areas:%s*", "");
+    
 
     -- Parse each venture entry
     for part in exp_text:gmatch("[^,]+") do
+        
         local level_range = part:match("%((%d+%-%d+)%)");
         local completion = part:match("@(%d+)%%");
         local area = part:gsub("%b()", ""):gsub("@%d+%%", ""):gsub("^%s*(.-)%s*$", "%1");
@@ -72,7 +72,14 @@ function parser:parse_exp_areas(lines)
         local vnm_equipment = nil;
         local vnm_element = nil;
         local vnm_crest = nil;
-        local vnm_notes = nil;
+        local vnm_notes = nil;        
+
+        if part:find("^%s*HVNM:") then
+            level_range = part:match("HVNM");
+            area = part:match("HVNM:%s*(.-)%s*%(");
+            completion = part:match("@(%d+)%%");
+        end
+
         local vnm_zone = vnm_data[area];
 
         if vnm_zone then
@@ -83,6 +90,7 @@ function parser:parse_exp_areas(lines)
                     vnm_element = vnm.element;
                     vnm_crest = vnm.crest;
                     vnm_notes = vnm.notes;
+                    vnm_name = vnm.name;
                     break;
                 end
             end

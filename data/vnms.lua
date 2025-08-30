@@ -21,6 +21,17 @@ return {
             ["crest"] = "Ocean Crest",
         },
     },
+    ["Maze of Shakhrami"] = {
+        {
+            ["name"] = "Maze Weaver",
+            ["level_range"] = "10-19",
+            ["position"] = "E-6",
+            ["notes"] = "",
+            ["equipment"] = "",
+            ["element"] = "",
+            ["crest"] = "",
+        },
+    },
     ["Buburimu Peninsula"] = {
         {
             ["name"] = "Puffer Pugil",
@@ -137,6 +148,15 @@ return {
             ["element"] = "Water",
             ["crest"] = "Ocean Crest",
         },
+        {
+            ["name"] = "Emberwing",
+            ["level_range"] = "HVNM",
+            ["position"] = "I-7",
+            ["notes"] = "",
+            ["equipment"] = "Eidolon Ring",
+            ["element"] = "",
+            ["crest"] = "",
+        },
     },
     ["Sauromugue Champaign"] = {
         {
@@ -238,7 +258,7 @@ return {
     ["Crawlers Nest"] = {
         {
             ["name"] = "Monarch Crawler",
-            ["level_range"] = "40-49",
+            ["level_range"] = "30-39",
             ["position"] = "J-7",
             ["notes"] = "Map 3",
             ["equipment"] = "25 Legs",
@@ -258,7 +278,7 @@ return {
     ["Garlaige Citadel"] = {
         {
             ["name"] = "Fortress Bat",
-            ["level_range"] = "40-49",
+            ["level_range"] = "30-39",
             ["position"] = "G-9",
             ["notes"] = "Map 1",
             ["equipment"] = "25 Legs",
@@ -291,21 +311,12 @@ return {
     ["Rolanberry Fields [S]"] = {
         {
             ["name"] = "Solitary Slug",
-            ["level_range"] = "40-49",
+            ["level_range"] = "50-59",
             ["position"] = "D-9",
             ["notes"] = "",
             ["equipment"] = "25 Body",
             ["element"] = "Water",
             ["crest"] = "Ocean Crest",
-        },
-        {
-            ["name"] = "?",
-            ["level_range"] = "50-59",
-            ["position"] = "?",
-            ["notes"] = "",
-            ["equipment"] = "?",
-            ["element"] = "",
-            ["crest"] = "?",
         },
     },
     ["Sauromugue Champaign [S]"] = {
@@ -328,6 +339,28 @@ return {
             ["equipment"] = "25 Body",
             ["element"] = "Earth",
             ["crest"] = "Desert Crest",
+        },
+    },
+    ["Toraimarai Canal"] = {
+        {
+            ["name"] = "Depth Lurker",
+            ["level_range"] = "40-49",
+            ["position"] = "I-6",
+            ["notes"] = "",
+            ["equipment"] = "",
+            ["element"] = "",
+            ["crest"] = "",
+        },
+    },
+    ["Misareaux Coast"] = {
+        {
+            ["name"] = "Coastal Clipper",
+            ["level_range"] = "40-49",
+            ["position"] = "I-6",
+            ["notes"] = "",
+            ["equipment"] = "",
+            ["element"] = "",
+            ["crest"] = "",
         },
     },
     ["Bostaunieux Oubliette"] = {
@@ -374,6 +407,28 @@ return {
             ["crest"] = "Mountain Crest",
         },
     },
+    ["Wajaom Woodlands"] = {
+        {
+            ["name"] = "Spectral Kisser",
+            ["level_range"] = "50-59",
+            ["position"] = "J-8",
+            ["notes"] = "",
+            ["equipment"] = "",
+            ["element"] = "",
+            ["crest"] = "",
+        },
+    },
+    ["Bhaflau Thickets"] = {
+        {
+            ["name"] = "Vile Vine",
+            ["level_range"] = "50-59",
+            ["position"] = "H-7",
+            ["notes"] = "Map 1 (WG exit to Thickets)",
+            ["equipment"] = "35 Body",
+            ["element"] = "Wind",
+            ["crest"] = "Forest Crest",
+        },
+    },
     ["Aydeewa Subterrane"] = {
         {
             ["name"] = "Nightmite",
@@ -394,17 +449,6 @@ return {
             ["equipment"] = "35 Legs",
             ["element"] = "Thunder",
             ["crest"] = "Tundra Crest",
-        },
-    },
-    ["Bhaflau Thickets"] = {
-        {
-            ["name"] = "Vile Vine",
-            ["level_range"] = "60-69",
-            ["position"] = "H-7",
-            ["notes"] = "Map 1 (WG exit to Thickets)",
-            ["equipment"] = "35 Body",
-            ["element"] = "Wind",
-            ["crest"] = "Forest Crest",
         },
     },
     ["Bibiki Bay"] = {
@@ -431,7 +475,7 @@ return {
     },
     ["The Boyahda Tree"] = {
         {
-            ["name"] = "Ancient Mold",
+            ["name"] = "Ancient Wyrm",
             ["level_range"] = "60-69",
             ["position"] = "J-8",
             ["notes"] = "Map 1. Take HP then drop at B",
