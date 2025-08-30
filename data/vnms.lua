@@ -126,6 +126,15 @@ return {
             ["element"] = "Wind",
             ["crest"] = "Forest Crest",
         },
+        {
+            ["name"] = "Tidepincher",
+            ["level_range"] = "HVNM",
+            ["position"] = "J-6",
+            ["notes"] = "",
+            ["equipment"] = "Fury's Edge",
+            ["element"] = "",
+            ["crest"] = "",
+        },
     },
     ["Korroloka Tunnel"] = {
         {
@@ -168,6 +177,15 @@ return {
             ["element"] = "Light",
             ["crest"] = "Mountain Crest",
         },
+        {
+            ["name"] = "Swiftsting",
+            ["level_range"] = "HVNM",
+            ["position"] = "H-6",
+            ["notes"] = "",
+            ["equipment"] = "Archer's Shield",
+            ["element"] = "",
+            ["crest"] = "",
+        },
     },
     ["Qufim Island"] = {
         {
@@ -178,6 +196,15 @@ return {
             ["equipment"] = "15 Body",
             ["element"] = "Thunder",
             ["crest"] = "Tundra Crest",
+        },
+        {
+            ["name"] = "Dustburrower",
+            ["level_range"] = "HVNM",
+            ["position"] = "I-7",
+            ["notes"] = "",
+            ["equipment"] = "Resonance Sash",
+            ["element"] = "",
+            ["crest"] = "",
         },
     },
     ["Yuhtunga Jungle"] = {
