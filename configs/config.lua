@@ -19,6 +19,10 @@ local default_settings = T{
     area_label = 'Area';
     completion_label = 'Completion';
     hide_sorting_text = false;
+    enable_time_estimation = true;
+    min_data_points = 4; -- Minimum completion updates needed for prediction
+    show_progress_rate = true; -- Show progress rate in UI
+    show_completion_time = true; -- Show estimated completion time
 };
 
 local settings = require('settings');
