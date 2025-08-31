@@ -141,6 +141,30 @@ function config_ui:draw()
             config.set('completion_label', completion_label[1])
         end
 
+        imgui.Separator();  -- visual divider between sections
+
+        -- Time Estimation Settings
+        imgui.Text('Time Estimation Settings');
+        imgui.Separator();
+        
+        -- Enable Time Estimation
+        local time_estimation = { config.get('enable_time_estimation') };
+        if imgui.Checkbox('Enable Time Estimation', time_estimation) then
+            config.set('enable_time_estimation', time_estimation[1]);
+        end
+        
+        -- Minimum Data Points
+        local min_data_points = { config.get('min_data_points') };
+        if imgui.SliderInt('Min Data Points for Prediction', min_data_points, 3, 8) then
+            config.set('min_data_points', min_data_points[1]);
+        end
+        
+        -- Show Completion Time
+        local show_completion_time = { config.get('show_completion_time') };
+        if imgui.Checkbox('Show Completion Time', show_completion_time) then
+            config.set('show_completion_time', show_completion_time[1]);
+        end
+
 
     end
     imgui.End();

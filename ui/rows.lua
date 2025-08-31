@@ -75,13 +75,71 @@ function rows:draw_venture_row(venture)
     imgui.SameLine(0, 0);
     imgui.TextUnformatted('  '); -- Two spaces
     imgui.SameLine(0, 0);
-    -- Draw completion percentage
+    -- Draw completion percentage with time estimation
     if completion >= alert_threshold then
         imgui.PushStyleColor(ImGuiCol_Text, { 1.0, 0.5, 0.0, 1.0 }); -- Orange
     else
         imgui.PushStyleColor(ImGuiCol_Text, { 0.5, 1.0, 0.5, 1.0 }); -- Green
     end
-    imgui.TextUnformatted(completion .. '%');
+    
+    -- Check if time estimation is enabled and we have enough data
+    local config = require('configs.config');
+    if config.get('enable_time_estimation') then
+        local rate_per_hour, minutes_to_complete, confidence = venture:get_time_estimate();
+        
+        if rate_per_hour and config.get('show_completion_time') then
+            -- Show completion percentage + time estimate: "47% → 2h 15m"
+            local hours = math.floor(minutes_to_complete / 60);
+            local mins = math.floor(minutes_to_complete % 60);
+            local time_text;
+            
+            if hours > 0 then
+                time_text = string.format("%dh %dm", hours, mins);
+            else
+                time_text = string.format("%dm", mins);
+            end
+            
+            -- Show completion percentage first (always with alert threshold colors)
+            imgui.TextUnformatted(completion .. '%');
+            imgui.PopStyleColor();
+            
+            -- Show separator and time estimate with confidence-based colors
+            imgui.SameLine(0, 0);
+            imgui.TextUnformatted(' : ');
+            imgui.SameLine(0, 0);
+            
+            -- Apply confidence-based colors to the time estimate (same schema as above)
+            local confidence_color;
+            if confidence == 'high' then
+                confidence_color = { 0.0, 1.0, 0.0, 1.0 }; -- Green
+            elseif confidence == 'medium' then
+                confidence_color = { 1.0, 1.0, 0.0, 1.0 }; -- Yellow
+            else
+                confidence_color = { 1.0, 0.0, 0.0, 1.0 }; -- Red
+            end
+            imgui.PushStyleColor(ImGuiCol_Text, confidence_color);
+            imgui.TextUnformatted(time_text);
+            imgui.PopStyleColor();
+            
+            -- Enhanced tooltip with time estimate
+            if imgui.IsItemHovered() then
+                imgui.BeginTooltip()
+                imgui.TextUnformatted(string.format("Rate: %.1f%%/hr", rate_per_hour));
+                imgui.TextUnformatted(string.format("Time to 100%%: %s", time_text));
+                imgui.TextUnformatted(string.format("Confidence: %s", confidence:upper()));
+                imgui.EndTooltip();
+            end
+            
+        else
+            -- Show just completion percentage
+            imgui.TextUnformatted(completion .. '%');
+        end
+        
+    else
+        -- Time estimation disabled, show just completion percentage
+        imgui.TextUnformatted(completion .. '%');
+    end
+    
     imgui.PopStyleColor();
     imgui.NextColumn();
 

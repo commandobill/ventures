@@ -1,6 +1,6 @@
 addon.name    = 'ventures';
-addon.author  = 'Commandobill, Seekey, and Phatty';
-addon.version = '1.5.4';
+addon.author  = 'Commandobill, Seekey, Phatty, and Chunk';
+addon.version = '1.6.0';
 addon.desc    = 'Capture and parse EXP Areas cleanly from !ventures response';
 
 require('common');
