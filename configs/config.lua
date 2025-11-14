@@ -19,6 +19,7 @@ local default_settings = T{
     area_label = 'Area';
     completion_label = 'Completion';
     hide_sorting_text = false;
+    show_hvnm_title = true;
 };
 
 local settings = require('settings');

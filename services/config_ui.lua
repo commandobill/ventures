@@ -43,6 +43,12 @@ function config_ui:draw()
             config.set('enable_alerts', alerts[1]);
         end
 
+        -- Show HVNM in header
+        local show_hvnm_title = { config.get('show_hvnm_title') };
+        if imgui.Checkbox('Show HVNM when collapsed', show_hvnm_title) then
+            config.set('show_hvnm_title', show_hvnm_title[1]);
+        end
+
         -- Notes Tooltip Visible Toggle
         local notes_visible = { config.get('notes_visible') }
         if imgui.Checkbox('Show Notes as Tooltip', notes_visible) then

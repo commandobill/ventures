@@ -50,7 +50,10 @@ function sorter:get_highest_completion(ventures)
     local highest_position = '';
     for _, venture in ipairs(ventures) do
         local completion = venture:get_completion();
-        if completion > highest_completion then
+        local level_range = venture:get_level_range()
+        local show_hvnm = config.get('show_hvnm_title')
+        local is_hvnm = (level_range == "HVNM")
+        if completion > highest_completion and (show_hvnm or not is_hvnm) then
             highest_completion = completion;
             highest_area = venture:get_area();
             highest_position = venture:get_location();
