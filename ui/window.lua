@@ -21,12 +21,13 @@ function ui:draw(ventures)
 
     imgui.SetNextWindowSize(window.size, ImGuiCond_FirstUseEver);
     local open = { config.get('show_gui') };
+    imgui.PushStyleColor(ImGuiCol_WindowBg, {0,0.06,0.16,0.9});
+    imgui.PushStyleColor(ImGuiCol_TitleBg, {0,0.06,0.16,0.7});
+    imgui.PushStyleColor(ImGuiCol_TitleBgActive, {0,0.06,0.16,0.9});
+    imgui.PushStyleColor(ImGuiCol_TitleBgCollapsed, {0,0.06,0.16,0.5});
     if imgui.Begin(window_title, open) then
         -- Set window styles
-        imgui.PushStyleColor(ImGuiCol_WindowBg, {0,0.06,0.16,0.9});
-        imgui.PushStyleColor(ImGuiCol_TitleBg, {0,0.06,0.16,0.7});
-        imgui.PushStyleColor(ImGuiCol_TitleBgActive, {0,0.06,0.16,0.9});
-        imgui.PushStyleColor(ImGuiCol_TitleBgCollapsed, {0,0.06,0.16,0.5});
+        
 
         imgui.Columns(4);
 
@@ -34,10 +35,11 @@ function ui:draw(ventures)
         rows:draw(ventures);
 
         imgui.Columns(1);
-        imgui.PopStyleColor(4);
+        
     end
 
     window:update_state(imgui);
+    imgui.PopStyleColor(4);
     imgui.End();
     config.set('show_gui', open[1])
 end

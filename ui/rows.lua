@@ -105,6 +105,7 @@ function rows:draw_venture_row(venture)
             imgui.Text(location)
         end
     end
+    imgui.PopStyleColor();
     imgui.NextColumn();
 end
 
