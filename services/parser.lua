@@ -29,7 +29,13 @@ local function GetEventSystemActive()
     return (ashita.memory.read_uint8(ptr) == 1);
 end
 
-
+local function sanitize_string(v)
+    local str = tostring(v or "");
+    str = str:gsub("^EXP Areas:%s*", "");
+    -- Remove non-printable / high-byte characters
+    str = str:gsub("[^%g%s]", "");
+    return str
+end
 
 -- Parse EXP Areas from captured lines
 function parser:parse_exp_areas(lines)
@@ -59,7 +65,7 @@ function parser:parse_exp_areas(lines)
     end
 
     local new_ventures = {}
-    exp_text = exp_text:gsub("^EXP Areas:%s*", "");
+    exp_text = sanitize_string(exp_text);
     
 
     -- Parse each venture entry
