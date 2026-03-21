@@ -110,9 +110,10 @@ end
 
 -- Draw all venture rows
 function rows:draw(ventures)
+    local show_hgrid = config.get('show_horizontal_grid');
     for i, venture in ipairs(ventures) do
         self:draw_venture_row(venture);
-        if i < #ventures then
+        if show_hgrid and i < #ventures then
             imgui.Separator();
         end
     end

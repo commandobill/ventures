@@ -25,6 +25,8 @@ local default_settings = T{
     col_area_width = 175;
     col_completion_width = 150;
     col_location_width = 250;
+    show_vertical_grid = true;
+    show_horizontal_grid = true;
 };
 
 local settings = require('settings');

@@ -28,7 +28,8 @@ function ui:draw(ventures)
         imgui.PushStyleColor(ImGuiCol_TitleBgActive, {0,0.06,0.16,0.9});
         imgui.PushStyleColor(ImGuiCol_TitleBgCollapsed, {0,0.06,0.16,0.5});
 
-        imgui.Columns(4, nil, true);
+        local show_vgrid = config.get('show_vertical_grid');
+        imgui.Columns(4, nil, show_vgrid);
 
         headers:draw();
         rows:draw(ventures);

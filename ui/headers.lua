@@ -30,7 +30,9 @@ function headers:draw()
     imgui.NextColumn();
     headers:draw_location_header();
     imgui.NextColumn();
-    imgui.Separator();
+    if config.get('show_horizontal_grid') then
+        imgui.Separator();
+    end
 end
 
 return headers;

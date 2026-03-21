@@ -8,7 +8,8 @@ local window = {
 };
 
 function window:get_size()
-    return { config.get('window_width') or 700, self.height };
+    local h = config.get('show_horizontal_grid') and 246 or 218;
+    return { config.get('window_width') or 700, h };
 end
 
 -- Update window state

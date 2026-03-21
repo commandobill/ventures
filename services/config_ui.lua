@@ -149,6 +149,18 @@ function config_ui:draw()
 
         imgui.Separator();  -- visual divider between sections
 
+        -- Grid Visibility
+        local show_vgrid = { config.get('show_vertical_grid') }
+        if imgui.Checkbox('Show Vertical Grid', show_vgrid) then
+            config.set('show_vertical_grid', show_vgrid[1])
+        end
+        local show_hgrid = { config.get('show_horizontal_grid') }
+        if imgui.Checkbox('Show Horizontal Grid', show_hgrid) then
+            config.set('show_horizontal_grid', show_hgrid[1])
+        end
+
+        imgui.Separator();  -- visual divider between sections
+
         -- Window & Column Widths
         imgui.Text('Window & Column Widths (px)');
 
