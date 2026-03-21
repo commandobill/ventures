@@ -30,27 +30,24 @@ function ui:draw(ventures)
 
         imgui.Columns(4, nil, false);
 
+        -- Capture content region X for manual grid lines
+        local content_x, _ = imgui.GetCursorScreenPos();
+
         headers:draw();
         rows:draw(ventures);
 
-        -- Draw manual vertical separator lines at column boundaries
+        -- Draw manual vertical separator lines at column boundaries (non-grippable)
+        -- Stop at the last row content, not the window bottom
         local draw_list = imgui.GetWindowDrawList();
-        local wx, wy = imgui.GetWindowPos();
-        local cy = wy + imgui.GetFrameHeight() + 2; -- below title bar
-        local ch = imgui.GetWindowHeight() - imgui.GetFrameHeight() - 2;
-        local scroll_y = imgui.GetScrollY();
-        local line_color = imgui.GetColorU32({1.0, 1.0, 1.0, 0.25});
-        local col_x = 0;
-        for i = 0, 2 do
-            col_x = col_x + imgui.GetColumnWidth(i);
-            local x = wx + col_x + imgui.GetStyle().WindowPadding.x;
-            draw_list:AddLine({x, cy}, {x, cy + ch}, line_color, 1.0);
-        end
+        local _, wy = imgui.GetWindowPos();
+        local top_y = wy + imgui.GetFrameHeight();
+        local _, bottom_y = imgui.GetCursorScreenPos();
+        local line_color = 0x40FFFFFF; -- white at ~25% alpha (ABGR)
 
-        -- Draw horizontal separator below headers
-        local header_y = cy + imgui.GetTextLineHeightWithSpacing() + 2;
-        local content_width = wx + imgui.GetWindowContentRegionWidth() + imgui.GetStyle().WindowPadding.x;
-        draw_list:AddLine({wx, header_y}, {content_width, header_y}, line_color, 1.0);
+        for i = 1, 3 do
+            local x = content_x + imgui.GetColumnOffset(i);
+            draw_list:AddLine({x, top_y}, {x, bottom_y}, line_color, 1.0);
+        end
 
         imgui.Columns(1);
         imgui.PopStyleColor(4);

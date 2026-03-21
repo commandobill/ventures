@@ -110,8 +110,11 @@ end
 
 -- Draw all venture rows
 function rows:draw(ventures)
-    for _, venture in ipairs(ventures) do
+    for i, venture in ipairs(ventures) do
         self:draw_venture_row(venture);
+        if i < #ventures then
+            imgui.Separator();
+        end
     end
 end
 

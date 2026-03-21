@@ -4,7 +4,7 @@ local window = {
     is_open = true,
     is_minimized = false,
     title = 'Goblin Ventures',
-    height = 224,
+    height = 246,
 };
 
 function window:get_size()
