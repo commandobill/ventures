@@ -17,6 +17,11 @@ end
 
 -- Draw all headers
 function headers:draw()
+    imgui.SetColumnWidth(0, config.get('col_level_range_width') or 125);
+    imgui.SetColumnWidth(1, config.get('col_area_width') or 175);
+    imgui.SetColumnWidth(2, config.get('col_completion_width') or 150);
+    imgui.SetColumnWidth(3, config.get('col_location_width') or 250);
+
     sort_button:draw_sort_button(config.get('level_range_label') or 'Level Range', 'level');
     imgui.NextColumn();
     sort_button:draw_sort_button(config.get('area_label') or 'Area', 'area');

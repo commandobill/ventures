@@ -1,9 +1,15 @@
+local config = require('configs.config');
+
 local window = {
     is_open = true,
     is_minimized = false,
     title = 'Goblin Ventures',
-    size = { 700, 350 }
+    height = 224,
 };
+
+function window:get_size()
+    return { config.get('window_width') or 700, self.height };
+end
 
 -- Update window state
 function window:update_state(imgui)

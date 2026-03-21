@@ -147,6 +147,45 @@ function config_ui:draw()
             config.set('completion_label', completion_label[1])
         end
 
+        imgui.Separator();  -- visual divider between sections
+
+        -- Window & Column Widths
+        imgui.Text('Window & Column Widths (px)');
+
+        local window_width = { config.get('window_width') or 700 }
+        imgui.PushItemWidth(200)
+        if imgui.SliderInt('Window Width', window_width, 300, 1200) then
+            config.set('window_width', window_width[1])
+        end
+        imgui.PopItemWidth()
+
+        local col_lr = { config.get('col_level_range_width') or 125 }
+        imgui.PushItemWidth(200)
+        if imgui.SliderInt('Level Range Col', col_lr, 50, 400) then
+            config.set('col_level_range_width', col_lr[1])
+        end
+        imgui.PopItemWidth()
+
+        local col_area = { config.get('col_area_width') or 175 }
+        imgui.PushItemWidth(200)
+        if imgui.SliderInt('Area Col', col_area, 50, 400) then
+            config.set('col_area_width', col_area[1])
+        end
+        imgui.PopItemWidth()
+
+        local col_comp = { config.get('col_completion_width') or 150 }
+        imgui.PushItemWidth(200)
+        if imgui.SliderInt('Completion Col', col_comp, 50, 400) then
+            config.set('col_completion_width', col_comp[1])
+        end
+        imgui.PopItemWidth()
+
+        local col_loc = { config.get('col_location_width') or 250 }
+        imgui.PushItemWidth(200)
+        if imgui.SliderInt('Location Col', col_loc, 50, 500) then
+            config.set('col_location_width', col_loc[1])
+        end
+        imgui.PopItemWidth()
 
     end
     imgui.End();

@@ -20,6 +20,11 @@ local default_settings = T{
     completion_label = 'Completion';
     hide_sorting_text = false;
     show_hvnm_title = true;
+    window_width = 700;
+    col_level_range_width = 125;
+    col_area_width = 175;
+    col_completion_width = 150;
+    col_location_width = 250;
 };
 
 local settings = require('settings');
