@@ -28,26 +28,10 @@ function ui:draw(ventures)
         imgui.PushStyleColor(ImGuiCol_TitleBgActive, {0,0.06,0.16,0.9});
         imgui.PushStyleColor(ImGuiCol_TitleBgCollapsed, {0,0.06,0.16,0.5});
 
-        imgui.Columns(4, nil, false);
-
-        -- Capture content region X for manual grid lines
-        local content_x, _ = imgui.GetCursorScreenPos();
+        imgui.Columns(4, nil, true);
 
         headers:draw();
         rows:draw(ventures);
-
-        -- Draw manual vertical separator lines at column boundaries (non-grippable)
-        -- Stop at the last row content, not the window bottom
-        local draw_list = imgui.GetWindowDrawList();
-        local _, wy = imgui.GetWindowPos();
-        local top_y = wy + imgui.GetFrameHeight();
-        local _, bottom_y = imgui.GetCursorScreenPos();
-        local line_color = 0x40FFFFFF; -- white at ~25% alpha (ABGR)
-
-        for i = 1, 3 do
-            local x = content_x + imgui.GetColumnOffset(i);
-            draw_list:AddLine({x, top_y}, {x, bottom_y}, line_color, 1.0);
-        end
 
         imgui.Columns(1);
         imgui.PopStyleColor(4);
