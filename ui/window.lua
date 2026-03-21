@@ -20,27 +20,35 @@ function ui:draw(ventures)
     local window_title = window:get_title(highest.completion, highest.area, highest.position);
 
     imgui.SetNextWindowSize(window:get_size(), ImGuiCond_Always);
+    imgui.PushStyleColor(ImGuiCol_WindowBg, {0,0.06,0.16,0.9});
+    imgui.PushStyleColor(ImGuiCol_TitleBg, {0,0.06,0.16,0.7});
+    imgui.PushStyleColor(ImGuiCol_TitleBgActive, {0,0.06,0.16,0.9});
+    imgui.PushStyleColor(ImGuiCol_TitleBgCollapsed, {0,0.06,0.16,0.5});
+
     local open = { config.get('show_gui') };
-    if imgui.Begin(window_title, open) then
-        -- Set window styles
-        imgui.PushStyleColor(ImGuiCol_WindowBg, {0,0.06,0.16,0.9});
-        imgui.PushStyleColor(ImGuiCol_TitleBg, {0,0.06,0.16,0.7});
-        imgui.PushStyleColor(ImGuiCol_TitleBgActive, {0,0.06,0.16,0.9});
-        imgui.PushStyleColor(ImGuiCol_TitleBgCollapsed, {0,0.06,0.16,0.5});
+    local ok, err = pcall(function()
+        if imgui.Begin(window_title, open) then
+            local show_vgrid = config.get('show_vertical_grid');
+            imgui.Columns(4, nil, show_vgrid);
 
-        local show_vgrid = config.get('show_vertical_grid');
-        imgui.Columns(4, nil, show_vgrid);
+            headers:draw();
+            rows:draw(ventures);
 
-        headers:draw();
-        rows:draw(ventures);
+            imgui.Columns(1);
+        end
+        window:update_state(imgui);
+    end);
 
-        imgui.Columns(1);
-        imgui.PopStyleColor(4);
+    if not ok then
+        print(string.format('[ventures] UI error: %s', tostring(err)));
     end
 
-    window:update_state(imgui);
     imgui.End();
-    config.set('show_gui', open[1])
+    imgui.PopStyleColor(4);
+
+    if open[1] ~= config.get('show_gui') then
+        config.set('show_gui', open[1]);
+    end
 end
 
 return ui;

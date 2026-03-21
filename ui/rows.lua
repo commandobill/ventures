@@ -106,6 +106,7 @@ function rows:draw_venture_row(venture)
         end
     end
     imgui.NextColumn();
+    imgui.PopStyleColor(); -- match PushStyleColor at start of draw_venture_row
 end
 
 -- Draw all venture rows

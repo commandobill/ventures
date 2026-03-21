@@ -14,14 +14,17 @@ function sort_button:draw_sort_button(label, sort_by)
         desc = ''
     end
 
-    if config.get('sort_by') == sort_by then
+    -- Capture active state once so push/pop always match
+    local is_active = (config.get('sort_by') == sort_by);
+
+    if is_active then
         imgui.PushStyleColor(ImGuiCol_Button, {0.2, 0.4, 0.8, 1.0});
         imgui.PushStyleColor(ImGuiCol_ButtonHovered, {0.2, 0.4, 0.8, 1.0});
         imgui.PushStyleColor(ImGuiCol_ButtonActive, {0.2, 0.4, 0.8, 1.0});
     end
 
     local button_text = label;
-    if config.get('sort_by') == sort_by then
+    if is_active then
         button_text = button_text .. (config.get('sort_ascending') and asc or desc);
     end
 
@@ -29,7 +32,7 @@ function sort_button:draw_sort_button(label, sort_by)
         sorter:set_column(sort_by);
     end
 
-    if config.get('sort_by') == sort_by then
+    if is_active then
         imgui.PopStyleColor(3);
     end
 end
