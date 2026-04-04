@@ -26,10 +26,6 @@ end
 function rows:draw_venture_row(venture)
     imgui.PushStyleColor(ImGuiCol_Text, { 1.0, 1.0, 1.0, 1.0 });
 
-    -- Pool
-    imgui.Text(venture:get_pool());
-    imgui.NextColumn();
-
     -- Level Range
     imgui.Text(venture:get_level_range());
     imgui.NextColumn();
