@@ -1,4 +1,5 @@
 local Venture = {
+    pool = '',
     level_range = '',
     area = '',
     completion = 0,
@@ -15,6 +16,7 @@ local Venture = {
 function Venture:new(data)
     local instance = setmetatable({}, { __index = Venture });
     local now = os.time();
+    instance.pool = data.pool or '';
     instance.level_range = data.level_range;
     instance.area = data.area;
     instance.completion = tonumber(data.completion) or 0;
@@ -38,6 +40,7 @@ function Venture:update(data)
         -- Reset detected, set to red
         self.last_increment_time = 0;
     end
+    self.pool = data.pool or self.pool;
     self.level_range = data.level_range;
     self.area = data.area;
     self.completion = new_completion;
@@ -48,6 +51,11 @@ function Venture:update(data)
     self.notes = data.notes;
 
     self.last_update_time = now;
+end
+
+-- Get pool
+function Venture:get_pool()
+    return self.pool or '';
 end
 
 -- Get completion percentage

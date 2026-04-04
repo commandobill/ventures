@@ -35,22 +35,25 @@ function alert:check_venture(venture)
     end
 
     local completion = venture:get_completion();
+    local pool = venture.get_pool and venture:get_pool() or '';
     local area = venture:get_area();
     local location = venture:get_location();
+    local alert_key = string.format('%s|%s|%s', pool, venture:get_level_range(), area);
+    local area_label = pool ~= '' and string.format('Pool %s %s', pool, area) or area;
 
     if completion > config.get('alert_threshold') then
-        local last = self.last_alerted_completion[area] or 0;
+        local last = self.last_alerted_completion[alert_key] or 0;
         if completion > last then
             local location_note = location ~= '' and string.format(" at %s", location) or "";
             print(chat.header('ventures') .. chat.success(
-                string.format("%s is now %d%% complete%s!", area, completion, location_note)
+                string.format("%s is now %d%% complete%s!", area_label, completion, location_note)
             ));
 
             if config.get('enable_audio') and completion >= config.get('audio_alert_threshold') then
                 self:play_sound(sound_files[config.get('selected_sound')]);
             end
 
-            self.last_alerted_completion[area] = completion;
+            self.last_alerted_completion[alert_key] = completion;
         end
     end
 end
