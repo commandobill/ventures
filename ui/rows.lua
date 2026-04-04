@@ -34,9 +34,15 @@ function rows:draw_venture_row(venture)
     imgui.Text(venture:get_area());
     if imgui.IsItemHovered() then
         local equipment = venture:get_equipment()
-        if equipment and equipment ~= "" then
+        local crest = venture:get_crest()
+        if (equipment and equipment ~= "") or (crest and crest ~= "") then
             imgui.BeginTooltip()
-            imgui.Text("Equipment: " .. equipment)
+            if equipment and equipment ~= "" then
+                imgui.Text("Equipment: " .. equipment)
+            end
+            if crest and crest ~= "" then
+                imgui.Text("Crest: " .. crest)
+            end
             imgui.EndTooltip()
         end
     end
