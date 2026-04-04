@@ -39,86 +39,104 @@ end
 
 -- Parse EXP Areas from captured lines
 function parser:parse_exp_areas(lines)
-    local exp_text = '';
-    local found_exp_start = false;
+    -- Combine all captured lines, tracking pool prefixes
+    -- Each line may start with "Pool A:", "Pool B:", or "HVNM:", or be a continuation
+    local segments = {} -- { {pool=, text=}, ... }
+    local current_pool = nil;
 
-    -- Find and combine EXP Areas text
     for _, entry in ipairs(lines) do
-        if not found_exp_start then
-            if string.find(entry.message, '^EXP Areas:') then
-                exp_text = exp_text .. entry.message;
-                found_exp_start = true;
+        local msg = sanitize_string(entry.message);
+
+        -- Check for pool prefix
+        local pool_label, pool_text = msg:match("^(Pool %a):%s*(.*)");
+        if pool_label then
+            current_pool = pool_label;
+            if pool_text and pool_text ~= '' then
+                table.insert(segments, { pool = current_pool, text = pool_text });
             end
-        elseif found_exp_start then
-            exp_text = exp_text .. ', ' .. entry.message;
+        elseif msg:match("^%s*HVNM:") then
+            table.insert(segments, { pool = "HVNM", text = msg });
+        elseif current_pool then
+            -- Continuation line for current pool
+            table.insert(segments, { pool = current_pool, text = msg });
         end
     end
 
-    if exp_text == '' then
+    if #segments == 0 then
         return self.parsed_ventures;
     end
 
-    -- Build a lookup for existing ventures by level_range
+    -- Build a lookup for existing ventures by pool+level_range
     local existing = {}
     for _, v in ipairs(self.parsed_ventures or {}) do
-        existing[v.level_range] = v
+        existing[v.pool .. ':' .. v.level_range] = v
     end
 
     local new_ventures = {}
-    exp_text = sanitize_string(exp_text);
-    
 
-    -- Parse each venture entry
-    for part in exp_text:gmatch("[^,]+") do
-        
-        local level_range = part:match("%((%d+%-%d+)%)");
-        local completion = part:match("@(%d+)%%");
-        local area = part:gsub("%b()", ""):gsub("@%d+%%", ""):gsub("^%s*(.-)%s*$", "%1");
-        local vnm_position = nil;
-        local vnm_equipment = nil;
-        local vnm_element = nil;
-        local vnm_crest = nil;
-        local vnm_notes = nil;        
+    for _, seg in ipairs(segments) do
+        local pool = seg.pool;
+        local text = seg.text;
 
-        if part:find("^%s*HVNM:") then
-            level_range = part:match("HVNM");
-            area = part:match("HVNM:%s*(.-)%s*%(");
-            completion = part:match("@(%d+)%%");
-        end
+        -- Split by comma for multiple entries per line
+        for part in text:gmatch("[^,]+") do
+            local level_range = nil;
+            local completion = nil;
+            local area = nil;
+            local vnm_position = nil;
+            local vnm_equipment = nil;
+            local vnm_element = nil;
+            local vnm_crest = nil;
+            local vnm_notes = nil;
 
-        local vnm_zone = vnm_data[area];
+            if pool == "HVNM" then
+                -- Format: HVNM: Sauromugue Champaign (Swiftsting) @34%
+                level_range = "HVNM";
+                area = part:match("HVNM:%s*(.-)%s*%(");
+                completion = part:match("@(%d+)%%");
+            else
+                -- Format: (10-19) Valkurm Dunes @18%
+                level_range = part:match("%((%d+%-%d+)%)");
+                completion = part:match("@(%d+)%%");
+                -- Area is between the level range closing paren and the @
+                area = part:match("%)%s*(.-)%s*@");
+            end
 
-        if vnm_zone then
-            for _, vnm in ipairs(vnm_zone) do
-                if vnm.level_range == level_range then
-                    vnm_position = vnm.position;
-                    vnm_equipment = vnm.equipment;
-                    vnm_element = vnm.element;
-                    vnm_crest = vnm.crest;
-                    vnm_notes = vnm.notes;
-                    vnm_name = vnm.name;
-                    break;
+            -- VNM data lookup by area name
+            local vnm_zone = vnm_data[area];
+            if vnm_zone then
+                for _, vnm in ipairs(vnm_zone) do
+                    if vnm.level_range == level_range then
+                        vnm_position = vnm.position;
+                        vnm_equipment = vnm.equipment;
+                        vnm_element = vnm.element;
+                        vnm_crest = vnm.crest;
+                        vnm_notes = vnm.notes;
+                        break;
+                    end
                 end
             end
-        end
 
-        if level_range and area then
-            local venture_data = {
-                level_range = level_range,
-                area = area,
-                completion = completion or '0',
-                loc = vnm_position and string.format("(%s)", vnm_position) or "",
-                equipment = vnm_equipment or "",
-                element = vnm_element or "",
-                crest = vnm_crest or "",
-                notes = vnm_notes and string.format("%s", vnm_notes) or ""
-            };
-            local v = existing[level_range]
-            if v then
-                v:update(venture_data)
-                table.insert(new_ventures, v)
-            else
-                table.insert(new_ventures, venture:new(venture_data))
+            if level_range and area then
+                local venture_data = {
+                    level_range = level_range,
+                    area = area,
+                    completion = completion or '0',
+                    pool = pool,
+                    loc = vnm_position and string.format("(%s)", vnm_position) or "",
+                    equipment = vnm_equipment or "",
+                    element = vnm_element or "",
+                    crest = vnm_crest or "",
+                    notes = vnm_notes and string.format("%s", vnm_notes) or ""
+                };
+                local key = pool .. ':' .. level_range;
+                local v = existing[key]
+                if v then
+                    v:update(venture_data)
+                    table.insert(new_ventures, v)
+                else
+                    table.insert(new_ventures, venture:new(venture_data))
+                end
             end
         end
     end

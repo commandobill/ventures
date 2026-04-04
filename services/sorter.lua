@@ -7,7 +7,10 @@ function sorter:sort(ventures)
     table.sort(ventures, function(a, b)
         local a_val, b_val;
 
-        if config.get('sort_by') == 'level' then
+        if config.get('sort_by') == 'pool' then
+            a_val = a:get_pool():lower();
+            b_val = b:get_pool():lower();
+        elseif config.get('sort_by') == 'level' then
             a_val = tonumber(a:get_level_range():match("(%d+)-")) or 0;
             b_val = tonumber(b:get_level_range():match("(%d+)-")) or 0;
         elseif config.get('sort_by') == 'area' then

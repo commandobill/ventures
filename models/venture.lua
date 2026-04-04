@@ -8,7 +8,8 @@ local Venture = {
     last_increment_time = 0,
     equipment = '',
     element = '',
-    crest = ''
+    crest = '',
+    pool = ''
 };
 
 -- Create new venture instance
@@ -23,6 +24,7 @@ function Venture:new(data)
     instance.element = data.element or '';
     instance.crest = data.crest or '';
     instance.notes = data.notes;
+    instance.pool = data.pool or '';
     instance.last_update_time = now;
     instance.last_increment_time = 0; -- Start as red
     return instance;
@@ -46,6 +48,7 @@ function Venture:update(data)
     self.element = data.element or self.element;
     self.crest = data.crest or self.crest;
     self.notes = data.notes;
+    self.pool = data.pool or self.pool;
 
     self.last_update_time = now;
 end
@@ -89,6 +92,11 @@ end
 -- Get notes
 function Venture:get_notes()
     return self.notes;
+end
+
+-- Get pool
+function Venture:get_pool()
+    return self.pool;
 end
 
 return Venture;

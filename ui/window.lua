@@ -29,7 +29,7 @@ function ui:draw(ventures)
         -- Set window styles
         
 
-        imgui.Columns(4);
+        imgui.Columns(5);
 
         headers:draw();
         rows:draw(ventures);

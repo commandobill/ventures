@@ -93,7 +93,7 @@ ashita.events.register('text_in', 'ventures_textin_cb', function(e)
         return;
     end
 
-    if mode == 9 and (string.find(e.message, "%(%d+%-%d+%)") or string.find(e.message, "HVNM")) then
+    if mode == 9 and (string.find(e.message, "Pool %a:") or string.find(e.message, "%(%d+%-%d+%)") or string.find(e.message, "HVNM")) then
 
         e.blocked = true;
         local entry = { mode = mode, message = e.message };
@@ -108,7 +108,7 @@ ashita.events.register('text_in', 'ventures_textin_cb', function(e)
             return;
         end
 
-        
+
     end
 
     if #parser.capture_lines >= parser.max_lines then
