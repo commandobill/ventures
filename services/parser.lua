@@ -37,6 +37,17 @@ local function sanitize_string(v)
     return str
 end
 
+-- Normalize zone name for fuzzy matching (strip apostrophes/quotes)
+local function normalize_name(name)
+    return name:gsub("[''`]", ""):lower();
+end
+
+-- Build a normalized lookup table for VNM data
+local vnm_lookup = {};
+for zone_name, zone_data in pairs(vnm_data) do
+    vnm_lookup[normalize_name(zone_name)] = zone_data;
+end
+
 -- Parse EXP Areas from captured lines
 function parser:parse_exp_areas(lines)
     -- Combine all captured lines, tracking pool prefixes
@@ -102,8 +113,8 @@ function parser:parse_exp_areas(lines)
                 area = part:match("%)%s*(.-)%s*@");
             end
 
-            -- VNM data lookup by area name
-            local vnm_zone = vnm_data[area];
+            -- VNM data lookup by area name (normalized to handle apostrophe variants)
+            local vnm_zone = area and vnm_lookup[normalize_name(area)];
             if vnm_zone then
                 for _, vnm in ipairs(vnm_zone) do
                     if vnm.level_range == level_range then
