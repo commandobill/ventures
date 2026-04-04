@@ -25,9 +25,14 @@ end
 -- Draw venture row
 function rows:draw_venture_row(venture)
     imgui.PushStyleColor(ImGuiCol_Text, { 1.0, 1.0, 1.0, 1.0 });
+    local pool = venture.get_pool and venture:get_pool() or ''
     
     -- Level Range
-    imgui.Text(venture:get_level_range());
+    local level_label = venture:get_level_range();
+    if pool ~= '' then
+        level_label = string.format('%s %s', pool, level_label);
+    end
+    imgui.Text(level_label);
     imgui.NextColumn();
 
     -- Area with tooltip

@@ -24,8 +24,18 @@ function sorter:sort(ventures)
         end
 
         if config.get('sort_ascending') then
+            if a_val == b_val then
+                local a_pool = a.get_pool and a:get_pool() or '';
+                local b_pool = b.get_pool and b:get_pool() or '';
+                return a_pool < b_pool;
+            end
             return a_val < b_val;
         else
+            if a_val == b_val then
+                local a_pool = a.get_pool and a:get_pool() or '';
+                local b_pool = b.get_pool and b:get_pool() or '';
+                return a_pool > b_pool;
+            end
             return a_val > b_val;
         end
     end);
