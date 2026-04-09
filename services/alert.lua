@@ -4,6 +4,13 @@ local chat = require('chat');
 local alert = {
     last_alerted_completion = {}
 };
+local function format_completion(value)
+    local completion = tonumber(value) or 0;
+    if completion == math.floor(completion) then
+        return string.format('%d', completion);
+    end
+    return string.format('%.1f', completion);
+end
 
 -- Preload sounds
 local function load_sounds()
@@ -46,7 +53,7 @@ function alert:check_venture(venture)
         if completion > last then
             local location_note = location ~= '' and string.format(" at %s", location) or "";
             print(chat.header('ventures') .. chat.success(
-                string.format("%s is now %d%% complete%s!", area_label, completion, location_note)
+                string.format("%s is now %s%% complete%s!", area_label, format_completion(completion), location_note)
             ));
 
             if config.get('enable_audio') and completion >= config.get('audio_alert_threshold') then

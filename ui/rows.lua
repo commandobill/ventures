@@ -2,6 +2,13 @@ local imgui = require('imgui');
 local config = require('configs.config');
 
 local rows = {};
+local function format_completion(value)
+    local completion = tonumber(value) or 0
+    if completion == math.floor(completion) then
+        return string.format('%d', completion)
+    end
+    return string.format('%.1f', completion)
+end
 
 -- Get indicator symbol and color based on time since last completion change
 local function get_indicator_and_color(venture)
@@ -86,7 +93,7 @@ function rows:draw_venture_row(venture)
     else
         imgui.PushStyleColor(ImGuiCol_Text, { 0.5, 1.0, 0.5, 1.0 }); -- Green
     end
-    imgui.TextUnformatted(completion .. '%');
+    imgui.TextUnformatted(format_completion(completion) .. '%');
     imgui.PopStyleColor();
     imgui.NextColumn();
 

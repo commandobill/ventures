@@ -1,6 +1,6 @@
 addon.name    = 'ventures';
 addon.author  = 'Commandobill, Seekey, and Phatty';
-addon.version = '1.6.0';
+addon.version = '1.6.1';
 addon.desc    = 'Capture and parse EXP Areas cleanly from !ventures response';
 
 require('common');
@@ -20,7 +20,17 @@ local zoning = false;
 local zone_loaded = false;
 local zone_entry_time = 0;
 local auto_refresh_timer = time.now();
-
+local function is_blank_ventures_line(message)
+    local line = tostring(message or '')
+    while true do
+        local cleaned, count = line:gsub('^%s*%[%d%d:%d%d:%d%d%]%s*', '', 1)
+        line = cleaned
+        if count == 0 then
+            break
+        end
+    end
+    return line:match('^%s*$') ~= nil
+end
 -- Handle command input
 ashita.events.register('command', 'ventures_command_cb', function(e)
     local args = e.command:args();
@@ -93,7 +103,13 @@ ashita.events.register('text_in', 'ventures_textin_cb', function(e)
         return;
     end
 
-    if mode == 9 and (string.find(e.message, "%(%d+%-%d+%)") or string.find(e.message, "HVNM")) then
+    if mode == 9 and is_blank_ventures_line(e.message) then
+        e.blocked = true;
+        return;
+    end
+
+
+    if mode == 9 and (string.find(e.message, "%(%d+%-%d+%)") or string.find(e.message, "HVNM") or e.message == "") then
 
         e.blocked = true;
         local entry = { mode = mode, message = e.message };

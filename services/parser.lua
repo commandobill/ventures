@@ -32,6 +32,14 @@ end
 local function sanitize_string(v)
     local str = tostring(v or "");
     str = str:gsub("^EXP Areas:%s*", "");
+    -- Strip one or more leading chat-style timestamps
+    while true do
+        local cleaned, count = str:gsub("^%s*%[%d%d:%d%d:%d%d%]%s*", "", 1);
+        str = cleaned;
+        if count == 0 then
+            break;
+        end
+    end
     -- Remove non-printable / high-byte characters
     str = str:gsub("[^%g%s]", "");
     return str
@@ -78,8 +86,8 @@ function parser:parse_exp_areas(lines)
             end
 
             local level_range = part:match("%((%d+%-%d+)%)");
-            local completion = part:match("@(%d+)%%");
-            local area = part:gsub("%b()", ""):gsub("@%d+%%", ""):gsub("^%s*(.-)%s*$", "%1");
+            local completion = part:match("@(%d+%.?%d*)%%");
+            local area = part:gsub("%b()", ""):gsub("@%d+%.?%d*%%", ""):gsub("^%s*(.-)%s*$", "%1");
             local vnm_position = nil;
             local vnm_equipment = nil;
             local vnm_element = nil;
@@ -91,7 +99,7 @@ function parser:parse_exp_areas(lines)
                 is_hvnm = true;
                 level_range = 'HVNM';
                 area = part:match("HVNM:%s*(.-)%s*%(");
-                completion = part:match("@(%d+)%%");
+                completion = part:match("@(%d+%.?%d*)%%");
                 pool = nil;
             end
 

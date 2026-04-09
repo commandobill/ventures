@@ -2,42 +2,80 @@ local config = require('configs.config');
 
 local sorter = {};
 
--- Sort ventures based on current settings
+local function get_pool_value(venture)
+    return (venture.get_pool and venture:get_pool() or ''):lower();
+end
+
+local function get_area_value(venture)
+    return tostring(venture:get_area() or ''):lower();
+end
+
+local function get_completion_value(venture)
+    return tonumber(venture:get_completion()) or 0;
+end
+
+local function get_level_value(venture)
+    local level_range = tostring(venture:get_level_range() or '');
+    return tonumber(level_range:match('(%d+)-')) or 0;
+end
+
+local function compare_strings(a, b, ascending)
+    if a == b then
+        return nil;
+    end
+    if ascending then
+        return a < b;
+    end
+    return a > b;
+end
+
+local function compare_numbers(a, b, ascending)
+    if a == b then
+        return nil;
+    end
+    if ascending then
+        return a < b;
+    end
+    return a > b;
+end
+
 function sorter:sort(ventures)
     table.sort(ventures, function(a, b)
-        local a_val, b_val;
+        local sort_by = config.get('sort_by');
+        local ascending = config.get('sort_ascending');
+        local result = nil;
 
-        if config.get('sort_by') == 'level' then
-            a_val = tonumber(a:get_level_range():match("(%d+)-")) or 0;
-            b_val = tonumber(b:get_level_range():match("(%d+)-")) or 0;
-        elseif config.get('sort_by') == 'area' then
-            a_val = a:get_area():lower();
-            b_val = b:get_area():lower();
-        elseif config.get('sort_by') == 'completion' then
-            a_val = a:get_completion();
-            b_val = b:get_completion();
-            if a_val == b_val then
-                -- Secondary: area name
-                a_val = a:get_level_range():lower();
-                b_val = b:get_level_range():lower();
-            end
-        end
+        if sort_by == 'level' then
+            result = compare_numbers(get_level_value(a), get_level_value(b), ascending);
+            if result ~= nil then return result; end
 
-        if config.get('sort_ascending') then
-            if a_val == b_val then
-                local a_pool = a.get_pool and a:get_pool() or '';
-                local b_pool = b.get_pool and b:get_pool() or '';
-                return a_pool < b_pool;
-            end
-            return a_val < b_val;
+            result = compare_strings(get_area_value(a), get_area_value(b), true);
+            if result ~= nil then return result; end
+
+        elseif sort_by == 'area' then
+            result = compare_strings(get_area_value(a), get_area_value(b), ascending);
+            if result ~= nil then return result; end
+
+            result = compare_numbers(get_level_value(a), get_level_value(b), true);
+            if result ~= nil then return result; end
+
         else
-            if a_val == b_val then
-                local a_pool = a.get_pool and a:get_pool() or '';
-                local b_pool = b.get_pool and b:get_pool() or '';
-                return a_pool > b_pool;
-            end
-            return a_val > b_val;
+            result = compare_numbers(get_completion_value(a), get_completion_value(b), ascending);
+            if result ~= nil then return result; end
+
+            result = compare_numbers(get_level_value(a), get_level_value(b), true);
+            if result ~= nil then return result; end
+
+            result = compare_strings(get_area_value(a), get_area_value(b), true);
+            if result ~= nil then return result; end
         end
+
+        result = compare_strings(get_pool_value(a), get_pool_value(b), ascending);
+        if result ~= nil then
+            return result;
+        end
+
+        return false;
     end);
 
     return ventures;
