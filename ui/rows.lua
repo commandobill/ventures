@@ -54,6 +54,11 @@ function rows:draw_venture_row(venture)
     end
     imgui.NextColumn();
 
+    if config.get('show_equipment_column') then
+        imgui.Text(venture:get_equipment() or '');
+        imgui.NextColumn();
+    end
+
     -- Completion with time indicator
     local completion = tonumber(venture:get_completion()) or 0
     local alert_threshold = tonumber(config.alert_threshold) or 90

@@ -21,6 +21,10 @@ function headers:draw()
     imgui.NextColumn();
     sort_button:draw_sort_button(config.get('area_label') or 'Area', 'area');
     imgui.NextColumn();
+    if config.get('show_equipment_column') then
+        imgui.Text('Equipment');
+        imgui.NextColumn();
+    end
     sort_button:draw_sort_button(config.get('completion_label') or 'Completion', 'completion');
     imgui.NextColumn();
     headers:draw_location_header();

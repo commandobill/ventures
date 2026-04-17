@@ -5,7 +5,6 @@ local default_settings = T{
     enable_audio = true;
     alert_threshold = 90;
     audio_alert_threshold = 100;
-    auto_refresh_interval = 60; -- seconds
     selected_sound = 1;
     sort_by = 'completion'; -- 'level', 'area', 'completion'
     sort_ascending = false;
@@ -15,11 +14,15 @@ local default_settings = T{
     fast_indicator = '^';
     slow_indicator = '=';
     notes_visible = false;
+    show_equipment_column = false;
+    use_global_imgui_style = false;
     level_range_label = 'Level Range';
     area_label = 'Area';
     completion_label = 'Completion';
     hide_sorting_text = false;
     show_hvnm_title = true;
+    venture_mode = 'ACE';
+    venture_pool_filter = 'All';
 };
 
 local settings = require('settings');

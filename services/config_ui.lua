@@ -2,6 +2,7 @@ local config = require('configs.config');
 local imgui = require('imgui');
 local config_ui = {};
 local chat = require('chat');
+local parser = require('services.parser');
 
 -- Preload sounds
 local function load_sounds()
@@ -29,6 +30,15 @@ function config_ui:draw()
     end
     --imgui.SetNextWindowSize({400, 400}, ImGuiCond_FirstUseEver);
     local open = { config.get('show_config_gui') };
+    local use_global_imgui_style = config.get('use_global_imgui_style');
+
+    if not use_global_imgui_style then
+        imgui.PushStyleColor(ImGuiCol_WindowBg, {0,0.06,0.16,0.9});
+        imgui.PushStyleColor(ImGuiCol_TitleBg, {0,0.06,0.16,0.7});
+        imgui.PushStyleColor(ImGuiCol_TitleBgActive, {0,0.06,0.16,0.9});
+        imgui.PushStyleColor(ImGuiCol_TitleBgCollapsed, {0,0.06,0.16,0.5});
+    end
+
     if imgui.Begin('Configuration##simpleconfig', open, ImGuiWindowFlags_AlwaysAutoResize) then
 
         -- Show GUI
@@ -36,6 +46,17 @@ function config_ui:draw()
         if imgui.Checkbox('Show GUI', gui) then
             config.set('show_gui', gui[1]);
         end
+
+        local venture_modes = { ACE = 0, CW = 1 };
+        local selected_mode = venture_modes[string.upper(config.get('venture_mode') or 'ACE')] or 0;
+        local mode_combo = { selected_mode };
+
+        imgui.PushItemWidth(120);
+        if imgui.Combo('Venture Mode', mode_combo, 'ACE\0CW\0', 2) then
+            config.set('venture_mode', mode_combo[1] == 1 and 'CW' or 'ACE');
+            parser:refresh_venture_mode();
+        end
+        imgui.PopItemWidth();
 
         -- Show Alerts
         local alerts = { config.get('enable_alerts') };
@@ -53,6 +74,18 @@ function config_ui:draw()
         local notes_visible = { config.get('notes_visible') }
         if imgui.Checkbox('Show Notes as Tooltip', notes_visible) then
             config.set('notes_visible', notes_visible[1])
+        end
+
+        -- Equipment Column Toggle
+        local show_equipment_column = { config.get('show_equipment_column') }
+        if imgui.Checkbox('Show Equipment Column', show_equipment_column) then
+            config.set('show_equipment_column', show_equipment_column[1])
+        end
+
+        -- Global ImGui Style Toggle
+        local use_global_imgui_style = { config.get('use_global_imgui_style') }
+        if imgui.Checkbox('Use Global ImGui Style', use_global_imgui_style) then
+            config.set('use_global_imgui_style', use_global_imgui_style[1])
         end
         
         -- Suppress Sorting Text Description (Asc) (Desc)
@@ -148,6 +181,9 @@ function config_ui:draw()
         end
 
 
+    end
+    if not use_global_imgui_style then
+        imgui.PopStyleColor(4);
     end
     imgui.End();
     config.set('show_config_gui', open[1])
