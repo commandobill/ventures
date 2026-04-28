@@ -17,7 +17,8 @@ local function filter_ventures(ventures)
     local filtered = {};
     for _, venture in ipairs(ventures or {}) do
         local pool = venture.get_pool and venture:get_pool() or venture.pool or '';
-        if pool == selected_pool then
+        local level_range = venture.get_level_range and venture:get_level_range() or venture.level_range or '';
+        if pool == selected_pool or level_range == 'HVNM' then
             table.insert(filtered, venture);
         end
     end
