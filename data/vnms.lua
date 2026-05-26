@@ -69,7 +69,7 @@ return {
         {
             ["name"] = "Blooming Rafflesia",
             ["level_range"] = "10-19",
-            ["position"] = "J-6",
+            ["position"] = "G-5",
             ["notes"] = "",
             ["equipment"] = "15 Hands",
             ["element"] = "Wind",
