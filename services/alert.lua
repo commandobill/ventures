@@ -43,9 +43,12 @@ function alert:check_venture(venture)
 
     local completion = venture:get_completion();
     local pool = venture.get_pool and venture:get_pool() or '';
-    local area = venture:get_area();
     local location = venture:get_location();
-    local alert_key = string.format('%s|%s|%s', pool, venture:get_level_range(), area);
+    local level_range = venture:get_level_range();
+    local area = venture:get_area();
+    local alert_key = pool ~= ''
+        and string.format('%s|%s', pool, level_range)
+        or string.format('%s|%s', level_range, area);
     local area_label = pool ~= '' and string.format('Pool %s %s', pool, area) or area;
 
     if completion > config.get('alert_threshold') then

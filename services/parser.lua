@@ -9,8 +9,8 @@ local parser = {
     last_packet_data = nil
 };
 
-local function make_venture_key(pool, level_range, area)
-    return string.format('%s|%s|%s', pool or '', level_range or '', area or '')
+local function make_venture_key(pool, level_range)
+    return string.format('%s|%s', pool or '', level_range or '')
 end
 
 local function get_zone_name(zone_id)
@@ -45,9 +45,25 @@ local function get_vnm_details(area, level_range)
     return details;
 end
 
-local function upsert_venture(existing, new_ventures, venture_data)
-    local key = make_venture_key(venture_data.pool, venture_data.level_range, venture_data.area);
+local function apply_mode_data(venture_data, mode)
+    local mode_data = venture_data.mode_data and venture_data.mode_data[mode];
+    if not mode_data then
+        return venture_data;
+    end
+
+    venture_data.area = mode_data.area;
+    venture_data.loc = mode_data.loc;
+    venture_data.equipment = mode_data.equipment;
+    venture_data.element = mode_data.element;
+    venture_data.crest = mode_data.crest;
+    venture_data.notes = mode_data.notes;
+    return venture_data;
+end
+
+local function upsert_venture(existing, new_ventures, venture_data, mode)
+    local key = make_venture_key(venture_data.pool, venture_data.level_range);
     local v = existing[key];
+    venture_data = apply_mode_data(venture_data, mode);
     if v then
         v:update(venture_data);
         table.insert(new_ventures, v);
@@ -59,7 +75,7 @@ end
 local function build_existing_lookup(ventures)
     local existing = {};
     for _, v in ipairs(ventures or {}) do
-        existing[make_venture_key(v.pool, v.level_range, v.area)] = v;
+        existing[make_venture_key(v.pool, v.level_range)] = v;
     end
     return existing;
 end
@@ -68,7 +84,6 @@ function parser:parse_venture_packet(data)
     self.last_packet_data = data;
 
     local venture_mode = string.upper(config.get('venture_mode') or 'ACE');
-    local use_cw_zones = venture_mode == 'CW';
     local tier_names = { '10-19', '20-29', '30-39', '40-49', '50-59', '60-69' };
     local pool_names = { 'A', 'B' };
     local existing = build_existing_lookup(self.parsed_ventures);
@@ -81,22 +96,35 @@ function parser:parse_venture_packet(data)
             local ace_zone = struct.unpack('H', data, off);
             local cw_zone = struct.unpack('H', data, off + 2);
             local progress = struct.unpack('B', data, off + 4);
-            local zone_id = use_cw_zones and cw_zone or ace_zone;
-            local area = get_zone_name(zone_id);
             local level_range = tier_names[tier + 1];
-            local details = get_vnm_details(area, level_range);
+            local ace_area = get_zone_name(ace_zone);
+            local cw_area = get_zone_name(cw_zone);
+            local ace_details = get_vnm_details(ace_area, level_range);
+            local cw_details = get_vnm_details(cw_area, level_range);
 
             upsert_venture(existing, new_ventures, {
                 pool = pool,
                 level_range = level_range,
-                area = area,
                 completion = progress,
-                loc = details.loc,
-                equipment = details.equipment,
-                element = details.element,
-                crest = details.crest,
-                notes = details.notes
-            });
+                mode_data = {
+                    ACE = {
+                        area = ace_area,
+                        loc = ace_details.loc,
+                        equipment = ace_details.equipment,
+                        element = ace_details.element,
+                        crest = ace_details.crest,
+                        notes = ace_details.notes
+                    },
+                    CW = {
+                        area = cw_area,
+                        loc = cw_details.loc,
+                        equipment = cw_details.equipment,
+                        element = cw_details.element,
+                        crest = cw_details.crest,
+                        notes = cw_details.notes
+                    }
+                }
+            }, venture_mode);
         end
     end
 
@@ -115,18 +143,37 @@ function parser:parse_venture_packet(data)
         element = hvnm_details.element,
         crest = hvnm_details.crest,
         notes = hvnm_details.notes
-    });
+    }, venture_mode);
 
     self.parsed_ventures = new_ventures;
     return self.parsed_ventures;
 end
 
 function parser:refresh_venture_mode()
-    if not self.last_packet_data then
+    local venture_mode = string.upper(config.get('venture_mode') or 'ACE');
+    local applied_cached_mode = false;
+
+    for _, v in ipairs(self.parsed_ventures or {}) do
+        if v.mode_data and v.mode_data[venture_mode] then
+            applied_cached_mode = true;
+            v:update(apply_mode_data({
+                pool = v.pool,
+                level_range = v.level_range,
+                completion = v.completion,
+                mode_data = v.mode_data
+            }, venture_mode));
+        end
+    end
+
+    if applied_cached_mode then
         return self.parsed_ventures;
     end
 
-    return self:parse_venture_packet(self.last_packet_data);
+    if self.last_packet_data then
+        return self:parse_venture_packet(self.last_packet_data);
+    end
+
+    return self.parsed_ventures;
 end
 
 function parser:reload_vnm_data()

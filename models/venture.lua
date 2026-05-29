@@ -9,7 +9,8 @@ local Venture = {
     last_increment_time = 0,
     equipment = '',
     element = '',
-    crest = ''
+    crest = '',
+    mode_data = nil
 };
 
 -- Create new venture instance
@@ -25,6 +26,7 @@ function Venture:new(data)
     instance.element = data.element or '';
     instance.crest = data.crest or '';
     instance.notes = data.notes;
+    instance.mode_data = data.mode_data;
     instance.last_update_time = now;
     instance.last_increment_time = 0; -- Start as red
     return instance;
@@ -49,6 +51,7 @@ function Venture:update(data)
     self.element = data.element or self.element;
     self.crest = data.crest or self.crest;
     self.notes = data.notes;
+    self.mode_data = data.mode_data or self.mode_data;
 
     self.last_update_time = now;
 end
