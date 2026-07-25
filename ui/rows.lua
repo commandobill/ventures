@@ -4,6 +4,8 @@ local config = require('configs.config');
 local rows = {};
 
 local SPAWN_SECONDS = 600; -- NM spawns 10 minutes after completion hits 100%
+local SPAWN_BAR_HEIGHT = 1;
+local COMPLETION_GREEN = { 0.5, 1.0, 0.5, 1.0 };
 
 -- Seconds left until the NM spawns, or nil when no timer applies
 local function get_spawn_remaining(venture)
@@ -18,21 +20,29 @@ local function get_spawn_remaining(venture)
     return remaining;
 end
 
--- Green bar across the completion column with the countdown over it
+-- Countdown text with a thin green bar behind it, spanning the column
 local function draw_spawn_bar(remaining)
     local label = string.format('%d:%02d', math.floor(remaining / 60), remaining % 60);
     -- Line the countdown up with where the '#%' text normally starts
     local indent = imgui.CalcTextSize((config.get('stopped_indicator') or 'x') .. '  ');
     local start_x, start_y = imgui.GetCursorPosX(), imgui.GetCursorPosY();
+    local _, text_h = imgui.CalcTextSize(label);
 
-    imgui.PushStyleColor(ImGuiCol_PlotHistogram, { 0.0, 0.75, 0.2, 1.0 });
-    imgui.ProgressBar(1 - (remaining / SPAWN_SECONDS), { -1, 0 }, '');
-    imgui.PopStyleColor();
-    local end_y = imgui.GetCursorPosY();
+    -- ponytail: bar sits at the bottom of the text line so it reads as an
+    -- underline instead of striking through the countdown.
+    imgui.SetCursorPos({ start_x, start_y + text_h - SPAWN_BAR_HEIGHT });
+    imgui.PushStyleColor(ImGuiCol_PlotHistogram, COMPLETION_GREEN);
+    imgui.PushStyleColor(ImGuiCol_FrameBg, { 0.0, 0.0, 0.0, 0.0 }); -- no track, fill only
+    imgui.PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
+    imgui.PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+    imgui.ProgressBar(1 - (remaining / SPAWN_SECONDS), { -1, SPAWN_BAR_HEIGHT }, '');
+    imgui.PopStyleVar(2);
+    imgui.PopStyleColor(2);
 
-    imgui.SetCursorPos({ start_x + indent, start_y + imgui.GetStyle().FramePadding.y });
+    imgui.SetCursorPos({ start_x + indent, start_y });
+    imgui.PushStyleColor(ImGuiCol_Text, COMPLETION_GREEN);
     imgui.TextUnformatted(label);
-    imgui.SetCursorPosY(end_y);
+    imgui.PopStyleColor();
 end
 
 local function format_completion(value)
@@ -133,7 +143,7 @@ function rows:draw_venture_row(venture)
         if completion >= alert_threshold then
             imgui.PushStyleColor(ImGuiCol_Text, { 1.0, 0.5, 0.0, 1.0 }); -- Orange
         else
-            imgui.PushStyleColor(ImGuiCol_Text, { 0.5, 1.0, 0.5, 1.0 }); -- Green
+            imgui.PushStyleColor(ImGuiCol_Text, COMPLETION_GREEN); -- Green
         end
         imgui.TextUnformatted(format_completion(completion) .. '%');
         imgui.PopStyleColor();
