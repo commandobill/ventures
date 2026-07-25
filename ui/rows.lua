@@ -9,17 +9,17 @@ local ORANGE_ABOVE_THRESHOLD = { 1.0, 0.5, 0.0, 1.0 };
 local ORANGE_FILL = { 1.0, 0.5, 0.0, 0.2 };
 local GREEN_BELOW_THRESHOLD = { 0.5, 1.0, 0.5, 1.0 };
 local GREEN_FILL = { 0.5, 1.0, 0.5, 0.2 };
--- Seconds left until the NM spawns, or nil when no timer applies
+local RED_SPAWNED = { 1.0, 0.2, 0.2, 1.0 };
+local RED_FILL = { 1.0, 0.0, 0.0, 0.2 };
+
+-- Seconds left until the NM spawns, negative once it has spawned,
+-- or nil when no timer applies
 local function get_spawn_remaining(venture)
     local hit = venture.hit_100_time or 0;
     if hit == 0 then
         return nil;
     end
-    local remaining = SPAWN_SECONDS - (os.time() - hit);
-    if remaining <= 0 then
-        return nil;
-    end
-    return remaining;
+    return SPAWN_SECONDS - (os.time() - hit);
 end
 
 -- Thin fill bar spanning the column, drawn behind the row text.
@@ -42,13 +42,13 @@ local function draw_fill_bar(fraction, color)
 end
 
 -- Countdown text with the spawn timer bar behind it
-local function draw_spawn_bar(label, fraction)
+local function draw_spawn_bar(label, fraction, fill_color, text_color)
     -- Line the countdown up with where the '#%' text normally starts
     local indent = imgui.CalcTextSize((config.get('stopped_indicator') or 'x') .. '  ');
-    local start_x, start_y = draw_fill_bar(fraction, ORANGE_FILL);
+    local start_x, start_y = draw_fill_bar(fraction, fill_color);
 
     imgui.SetCursorPos({ start_x + indent, start_y });
-    imgui.PushStyleColor(ImGuiCol_Text, ORANGE_ABOVE_THRESHOLD);
+    imgui.PushStyleColor(ImGuiCol_Text, text_color);
     imgui.TextUnformatted(label);
     imgui.PopStyleColor();
 end
@@ -116,13 +116,16 @@ function rows:draw_venture_row(venture)
     local indicator, time_color = get_indicator_and_color(venture);
     local spawn_remaining = get_spawn_remaining(venture);
 
-    if spawn_remaining then
+    if spawn_remaining and spawn_remaining > 0 then
         draw_spawn_bar(string.format('%d:%02d', math.floor(spawn_remaining / 60), spawn_remaining % 60),
-            1 - (spawn_remaining / SPAWN_SECONDS));
+            1 - (spawn_remaining / SPAWN_SECONDS), ORANGE_FILL, ORANGE_ABOVE_THRESHOLD);
+    elseif spawn_remaining then
+        -- Timer ran out: the NM is up
+        draw_spawn_bar('KILL', 1, RED_FILL, RED_SPAWNED);
     elseif completion >= 100 then
         -- At 100% with no stamp: hit 100% before the addon saw it, so the
         -- spawn time is unknown. Empty bar, placeholder countdown.
-        draw_spawn_bar('?:??', 0);
+        draw_spawn_bar('?:??', 0, ORANGE_FILL, ORANGE_ABOVE_THRESHOLD);
         if imgui.IsItemHovered() then
             imgui.BeginTooltip();
             imgui.TextUnformatted('Unknown spawn timer in progress.');
