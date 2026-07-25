@@ -4,8 +4,9 @@ local config = require('configs.config');
 local rows = {};
 
 local SPAWN_SECONDS = 600; -- NM spawns 10 minutes after completion hits 100%
-local SPAWN_BAR_HEIGHT = 1;
+local SPAWN_BAR_HEIGHT = 15;
 local COMPLETION_GREEN = { 0.5, 1.0, 0.5, 1.0 };
+local COMPLETION_GREEN_FILL = { 0.5, 1.0, 0.5, 0.2 };
 
 -- Seconds left until the NM spawns, or nil when no timer applies
 local function get_spawn_remaining(venture)
@@ -28,10 +29,8 @@ local function draw_spawn_bar(remaining)
     local start_x, start_y = imgui.GetCursorPosX(), imgui.GetCursorPosY();
     local _, text_h = imgui.CalcTextSize(label);
 
-    -- ponytail: bar sits at the bottom of the text line so it reads as an
-    -- underline instead of striking through the countdown.
-    imgui.SetCursorPos({ start_x, start_y + text_h - SPAWN_BAR_HEIGHT });
-    imgui.PushStyleColor(ImGuiCol_PlotHistogram, COMPLETION_GREEN);
+    imgui.SetCursorPos({ start_x, start_y + text_h - SPAWN_BAR_HEIGHT - 2 });
+    imgui.PushStyleColor(ImGuiCol_PlotHistogram, COMPLETION_GREEN_FILL);
     imgui.PushStyleColor(ImGuiCol_FrameBg, { 0.0, 0.0, 0.0, 0.0 }); -- no track, fill only
     imgui.PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
     imgui.PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
