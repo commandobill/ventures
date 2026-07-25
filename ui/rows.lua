@@ -37,7 +37,10 @@ function rows:draw_venture_row(venture)
     -- Level Range
     local level_label = venture:get_level_range();
     if pool ~= '' then
-        level_label = string.format('%s %s', pool, level_label);
+        level_label = string.format('%s %s', level_label, pool);
+    end
+    if venture.mode_label then
+        level_label = string.format('%s %s', level_label, venture.mode_label);
     end
     imgui.Text(level_label);
     imgui.NextColumn();

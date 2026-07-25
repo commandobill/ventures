@@ -43,7 +43,7 @@ local function expand_venture_modes(ventures)
                 local data = venture.mode_data[mode];
                 if data then
                     table.insert(expanded, setmetatable({
-                        level_range = string.format('%s %s', venture.level_range or '', mode),
+                        mode_label = mode,
                         area = data.area or '',
                         location = data.loc or '',
                         equipment = data.equipment or '',
