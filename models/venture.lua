@@ -7,6 +7,7 @@ local Venture = {
     notes = '',
     last_update_time = 0,
     last_increment_time = 0,
+    hit_100_time = 0,
     equipment = '',
     element = '',
     crest = '',
@@ -29,6 +30,9 @@ function Venture:new(data)
     instance.mode_data = data.mode_data;
     instance.last_update_time = now;
     instance.last_increment_time = 0; -- Start as red
+    -- ponytail: 0 means "not seen hitting 100%"; a venture already at 100% on
+    -- the first packet has an unknown spawn time, so no timer is shown for it.
+    instance.hit_100_time = 0;
     return instance;
 end
 
@@ -41,6 +45,13 @@ function Venture:update(data)
     elseif new_completion < self.completion then
         -- Reset detected, set to red
         self.last_increment_time = 0;
+    end
+
+    -- Record when completion reaches 100% (NM spawns 10 minutes later)
+    if new_completion >= 100 and self.completion < 100 then
+        self.hit_100_time = now;
+    elseif new_completion < 100 then
+        self.hit_100_time = 0;
     end
     self.pool = data.pool or self.pool;
     self.level_range = data.level_range;

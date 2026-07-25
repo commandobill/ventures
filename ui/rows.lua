@@ -2,6 +2,39 @@ local imgui = require('imgui');
 local config = require('configs.config');
 
 local rows = {};
+
+local SPAWN_SECONDS = 600; -- NM spawns 10 minutes after completion hits 100%
+
+-- Seconds left until the NM spawns, or nil when no timer applies
+local function get_spawn_remaining(venture)
+    local hit = venture.hit_100_time or 0;
+    if hit == 0 then
+        return nil;
+    end
+    local remaining = SPAWN_SECONDS - (os.time() - hit);
+    if remaining <= 0 then
+        return nil;
+    end
+    return remaining;
+end
+
+-- Green bar across the completion column with the countdown over it
+local function draw_spawn_bar(remaining)
+    local label = string.format('%d:%02d', math.floor(remaining / 60), remaining % 60);
+    -- Line the countdown up with where the '#%' text normally starts
+    local indent = imgui.CalcTextSize((config.get('stopped_indicator') or 'x') .. '  ');
+    local start_x, start_y = imgui.GetCursorPosX(), imgui.GetCursorPosY();
+
+    imgui.PushStyleColor(ImGuiCol_PlotHistogram, { 0.0, 0.75, 0.2, 1.0 });
+    imgui.ProgressBar(1 - (remaining / SPAWN_SECONDS), { -1, 0 }, '');
+    imgui.PopStyleColor();
+    local end_y = imgui.GetCursorPosY();
+
+    imgui.SetCursorPos({ start_x + indent, start_y + imgui.GetStyle().FramePadding.y });
+    imgui.TextUnformatted(label);
+    imgui.SetCursorPosY(end_y);
+end
+
 local function format_completion(value)
     local completion = tonumber(value) or 0
     if completion == math.floor(completion) then
@@ -59,47 +92,52 @@ function rows:draw_venture_row(venture)
         imgui.NextColumn();
     end
 
-    -- Completion with time indicator
+    -- Completion with time indicator, or the spawn countdown bar at 100%
     local completion = tonumber(venture:get_completion()) or 0
     local alert_threshold = tonumber(config.alert_threshold) or 90
     local indicator, time_color = get_indicator_and_color(venture);
-    
-    -- Draw indicator first
-    imgui.PushStyleColor(ImGuiCol_Text, time_color);
-    imgui.TextUnformatted(indicator);
-    imgui.PopStyleColor();
+    local spawn_remaining = get_spawn_remaining(venture);
 
-    if imgui.IsItemHovered() then
-        local minutes
-        if not venture.last_increment_time or venture.last_increment_time == 0 then
-            minutes = nil
-        else
-            minutes = math.floor((os.time() - venture.last_increment_time) / 60)
-        end
-        imgui.BeginTooltip()
-        if not minutes then
-            imgui.TextUnformatted("Last progress: unknown")
-        elseif minutes == 0 then
-            imgui.TextUnformatted("Last progress: just now")
-        elseif minutes == 1 then
-            imgui.TextUnformatted("Last progress: 1 minute ago")
-        else
-            imgui.TextUnformatted("Last progress: " .. minutes .. " minutes ago")
-        end
-        imgui.EndTooltip()
-    end
-    
-    imgui.SameLine(0, 0);
-    imgui.TextUnformatted('  '); -- Two spaces
-    imgui.SameLine(0, 0);
-    -- Draw completion percentage
-    if completion >= alert_threshold then
-        imgui.PushStyleColor(ImGuiCol_Text, { 1.0, 0.5, 0.0, 1.0 }); -- Orange
+    if spawn_remaining then
+        draw_spawn_bar(spawn_remaining);
     else
-        imgui.PushStyleColor(ImGuiCol_Text, { 0.5, 1.0, 0.5, 1.0 }); -- Green
+        -- Draw indicator first
+        imgui.PushStyleColor(ImGuiCol_Text, time_color);
+        imgui.TextUnformatted(indicator);
+        imgui.PopStyleColor();
+
+        if imgui.IsItemHovered() then
+            local minutes
+            if not venture.last_increment_time or venture.last_increment_time == 0 then
+                minutes = nil
+            else
+                minutes = math.floor((os.time() - venture.last_increment_time) / 60)
+            end
+            imgui.BeginTooltip()
+            if not minutes then
+                imgui.TextUnformatted("Last progress: unknown")
+            elseif minutes == 0 then
+                imgui.TextUnformatted("Last progress: just now")
+            elseif minutes == 1 then
+                imgui.TextUnformatted("Last progress: 1 minute ago")
+            else
+                imgui.TextUnformatted("Last progress: " .. minutes .. " minutes ago")
+            end
+            imgui.EndTooltip()
+        end
+
+        imgui.SameLine(0, 0);
+        imgui.TextUnformatted('  '); -- Two spaces
+        imgui.SameLine(0, 0);
+        -- Draw completion percentage
+        if completion >= alert_threshold then
+            imgui.PushStyleColor(ImGuiCol_Text, { 1.0, 0.5, 0.0, 1.0 }); -- Orange
+        else
+            imgui.PushStyleColor(ImGuiCol_Text, { 0.5, 1.0, 0.5, 1.0 }); -- Green
+        end
+        imgui.TextUnformatted(format_completion(completion) .. '%');
+        imgui.PopStyleColor();
     end
-    imgui.TextUnformatted(format_completion(completion) .. '%');
-    imgui.PopStyleColor();
     imgui.NextColumn();
 
     -- Location and Notes

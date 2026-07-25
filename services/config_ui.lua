@@ -94,6 +94,13 @@ function config_ui:draw()
             config.set('hide_sorting_text', hide_sorting_text[1])
         end
 
+        -- TEMPORARY: fake venture at 100% to preview the spawn countdown bar
+        local test_bar = { config.get('test_progress_bar') }
+        if imgui.Checkbox('Test Progress Bar', test_bar) then
+            config.set('test_progress_bar', test_bar[1]);
+            config.set('test_progress_bar_time', test_bar[1] and os.time() or 0);
+        end
+
         imgui.Separator();  -- visual divider between sections
 
         -- Play Audio
