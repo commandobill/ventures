@@ -132,8 +132,6 @@ function ui:draw(ventures)
 
         draw_pool_filter_tabs();
 
-        imgui.Separator();
-
         imgui.Columns(config.get('show_equipment_column') and 5 or 4);
 
         headers:draw();
