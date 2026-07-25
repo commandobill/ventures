@@ -5,9 +5,10 @@ local rows = {};
 
 local SPAWN_SECONDS = 600; -- NM spawns 10 minutes after completion hits 100%
 local SPAWN_BAR_HEIGHT = 15;
-local COMPLETION_GREEN = { 0.5, 1.0, 0.5, 1.0 };
-local COMPLETION_GREEN_FILL = { 0.5, 1.0, 0.5, 0.2 };
-
+local ORANGE_ABOVE_THRESHOLD = { 1.0, 0.5, 0.0, 1.0 };
+local ORANGE_FILL = { 1.0, 0.5, 0.0, 0.2 };
+local GREEN_BELOW_THRESHOLD = { 0.5, 1.0, 0.5, 1.0 };
+local GREEN_FILL = { 0.5, 1.0, 0.5, 0.2 };
 -- Seconds left until the NM spawns, or nil when no timer applies
 local function get_spawn_remaining(venture)
     local hit = venture.hit_100_time or 0;
@@ -30,7 +31,7 @@ local function draw_spawn_bar(remaining)
     local _, text_h = imgui.CalcTextSize(label);
 
     imgui.SetCursorPos({ start_x, start_y + text_h - SPAWN_BAR_HEIGHT - 2 });
-    imgui.PushStyleColor(ImGuiCol_PlotHistogram, COMPLETION_GREEN_FILL);
+    imgui.PushStyleColor(ImGuiCol_PlotHistogram, ORANGE_FILL);
     imgui.PushStyleColor(ImGuiCol_FrameBg, { 0.0, 0.0, 0.0, 0.0 }); -- no track, fill only
     imgui.PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
     imgui.PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
@@ -39,7 +40,7 @@ local function draw_spawn_bar(remaining)
     imgui.PopStyleColor(2);
 
     imgui.SetCursorPos({ start_x + indent, start_y });
-    imgui.PushStyleColor(ImGuiCol_Text, COMPLETION_GREEN);
+    imgui.PushStyleColor(ImGuiCol_Text, ORANGE_ABOVE_THRESHOLD);
     imgui.TextUnformatted(label);
     imgui.PopStyleColor();
 end
@@ -140,9 +141,9 @@ function rows:draw_venture_row(venture)
         imgui.SameLine(0, 0);
         -- Draw completion percentage
         if completion >= alert_threshold then
-            imgui.PushStyleColor(ImGuiCol_Text, { 1.0, 0.5, 0.0, 1.0 }); -- Orange
+            imgui.PushStyleColor(ImGuiCol_Text, ORANGE_ABOVE_THRESHOLD); -- Orange
         else
-            imgui.PushStyleColor(ImGuiCol_Text, COMPLETION_GREEN); -- Green
+            imgui.PushStyleColor(ImGuiCol_Text, GREEN_BELOW_THRESHOLD); -- Green
         end
         imgui.TextUnformatted(format_completion(completion) .. '%');
         imgui.PopStyleColor();
