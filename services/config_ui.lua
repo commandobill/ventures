@@ -47,16 +47,18 @@ function config_ui:draw()
             config.set('show_gui', gui[1]);
         end
 
-        local venture_modes = { ACE = 0, CW = 1 };
-        local selected_mode = venture_modes[string.upper(config.get('venture_mode') or 'ACE')] or 0;
-        local mode_combo = { selected_mode };
+        if not config.get('hide_venture_mode') then
+            local venture_modes = { ACE = 0, CW = 1 };
+            local selected_mode = venture_modes[string.upper(config.get('venture_mode') or 'ACE')] or 0;
+            local mode_combo = { selected_mode };
 
-        imgui.PushItemWidth(120);
-        if imgui.Combo('Venture Mode', mode_combo, 'ACE\0CW\0', 2) then
-            config.set('venture_mode', mode_combo[1] == 1 and 'CW' or 'ACE');
-            parser:refresh_venture_mode();
+            imgui.PushItemWidth(120);
+            if imgui.Combo('Venture Mode', mode_combo, 'ACE\0CW\0', 2) then
+                config.set('venture_mode', mode_combo[1] == 1 and 'CW' or 'ACE');
+                parser:refresh_venture_mode();
+            end
+            imgui.PopItemWidth();
         end
-        imgui.PopItemWidth();
 
         -- Show Alerts
         local alerts = { config.get('enable_alerts') };
@@ -98,6 +100,12 @@ function config_ui:draw()
         local hide_pool_tabs = { config.get('hide_pool_tabs') };
         if imgui.Checkbox('Hide Pool Tabs (All Pools)', hide_pool_tabs) then
             config.set('hide_pool_tabs', hide_pool_tabs[1]);
+        end
+
+        -- Venture Mode Dropdown Toggle
+        local hide_venture_mode = { config.get('hide_venture_mode') };
+        if imgui.Checkbox('Hide Venture Mode (show ACE + CW)', hide_venture_mode) then
+            config.set('hide_venture_mode', hide_venture_mode[1]);
         end
 
         imgui.Separator();  -- visual divider between sections

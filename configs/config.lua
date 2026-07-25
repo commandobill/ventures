@@ -24,6 +24,7 @@ local default_settings = T{
     venture_mode = 'ACE';
     venture_pool_filter = 'All';
     hide_pool_tabs = false;
+    hide_venture_mode = false;
 };
 
 local settings = require('settings');

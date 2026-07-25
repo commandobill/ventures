@@ -29,6 +29,38 @@ local function filter_ventures(ventures)
     return filtered;
 end
 
+-- ponytail: proxies over the real venture so rows/sorter methods keep working;
+-- only the mode-specific fields are overridden, everything else falls through.
+local function expand_venture_modes(ventures)
+    if not config.get('hide_venture_mode') then
+        return ventures;
+    end
+
+    local expanded = {};
+    for _, venture in ipairs(ventures or {}) do
+        if venture.mode_data then
+            for _, mode in ipairs({ 'ACE', 'CW' }) do
+                local data = venture.mode_data[mode];
+                if data then
+                    table.insert(expanded, setmetatable({
+                        level_range = string.format('%s %s', venture.level_range or '', mode),
+                        area = data.area or '',
+                        location = data.loc or '',
+                        equipment = data.equipment or '',
+                        element = data.element or '',
+                        crest = data.crest or '',
+                        notes = data.notes or ''
+                    }, { __index = venture }));
+                end
+            end
+        else
+            table.insert(expanded, venture);
+        end
+    end
+
+    return expanded;
+end
+
 local function draw_pool_filter_tabs()
     if config.get('hide_pool_tabs') then
         return;
@@ -61,7 +93,7 @@ function ui:draw(ventures)
         return;
     end
 
-    ventures = filter_ventures(ventures);
+    ventures = expand_venture_modes(filter_ventures(ventures));
     ventures = sorter:sort(ventures);
 
     -- Get highest completion info
@@ -83,18 +115,20 @@ function ui:draw(ventures)
 
     if imgui.Begin(window_title, open) then
         -- Set window styles
-        local venture_modes = { ACE = 0, CW = 1 };
-        local selected_mode = venture_modes[string.upper(config.get('venture_mode') or 'ACE')] or 0;
-        local combo = { selected_mode };
+        if not config.get('hide_venture_mode') then
+            local venture_modes = { ACE = 0, CW = 1 };
+            local selected_mode = venture_modes[string.upper(config.get('venture_mode') or 'ACE')] or 0;
+            local combo = { selected_mode };
 
-        imgui.PushItemWidth(90);
-        if imgui.Combo('Mode', combo, 'ACE\0CW\0', 2) then
-            config.set('venture_mode', combo[1] == 1 and 'CW' or 'ACE');
-            ventures = parser:refresh_venture_mode();
-            ventures = filter_ventures(ventures);
-            ventures = sorter:sort(ventures);
+            imgui.PushItemWidth(90);
+            if imgui.Combo('Mode', combo, 'ACE\0CW\0', 2) then
+                config.set('venture_mode', combo[1] == 1 and 'CW' or 'ACE');
+                ventures = parser:refresh_venture_mode();
+                ventures = expand_venture_modes(filter_ventures(ventures));
+                ventures = sorter:sort(ventures);
+            end
+            imgui.PopItemWidth();
         end
-        imgui.PopItemWidth();
 
         draw_pool_filter_tabs();
 
