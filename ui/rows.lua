@@ -42,11 +42,10 @@ local function draw_fill_bar(fraction, color)
 end
 
 -- Countdown text with the spawn timer bar behind it
-local function draw_spawn_bar(remaining)
-    local label = string.format('%d:%02d', math.floor(remaining / 60), remaining % 60);
+local function draw_spawn_bar(label, fraction)
     -- Line the countdown up with where the '#%' text normally starts
     local indent = imgui.CalcTextSize((config.get('stopped_indicator') or 'x') .. '  ');
-    local start_x, start_y = draw_fill_bar(1 - (remaining / SPAWN_SECONDS), ORANGE_FILL);
+    local start_x, start_y = draw_fill_bar(fraction, ORANGE_FILL);
 
     imgui.SetCursorPos({ start_x + indent, start_y });
     imgui.PushStyleColor(ImGuiCol_Text, ORANGE_ABOVE_THRESHOLD);
@@ -118,7 +117,17 @@ function rows:draw_venture_row(venture)
     local spawn_remaining = get_spawn_remaining(venture);
 
     if spawn_remaining then
-        draw_spawn_bar(spawn_remaining);
+        draw_spawn_bar(string.format('%d:%02d', math.floor(spawn_remaining / 60), spawn_remaining % 60),
+            1 - (spawn_remaining / SPAWN_SECONDS));
+    elseif completion >= 100 then
+        -- At 100% with no stamp: hit 100% before the addon saw it, so the
+        -- spawn time is unknown. Empty bar, placeholder countdown.
+        draw_spawn_bar('?:??', 0);
+        if imgui.IsItemHovered() then
+            imgui.BeginTooltip();
+            imgui.TextUnformatted('Unknown spawn timer in progress.');
+            imgui.EndTooltip();
+        end
     else
         if config.get('show_completion_bar') then
             draw_fill_bar(completion / 100, completion >= alert_threshold and ORANGE_FILL or GREEN_FILL);
