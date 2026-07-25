@@ -23,6 +23,7 @@ local default_settings = T{
     show_hvnm_title = true;
     venture_mode = 'ACE';
     venture_pool_filter = 'All';
+    hide_pool_tabs = false;
 };
 
 local settings = require('settings');

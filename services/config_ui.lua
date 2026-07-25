@@ -94,6 +94,12 @@ function config_ui:draw()
             config.set('hide_sorting_text', hide_sorting_text[1])
         end
 
+        -- Pool Filter Tabs Toggle
+        local hide_pool_tabs = { config.get('hide_pool_tabs') };
+        if imgui.Checkbox('Hide Pool Tabs (All Pools)', hide_pool_tabs) then
+            config.set('hide_pool_tabs', hide_pool_tabs[1]);
+        end
+
         imgui.Separator();  -- visual divider between sections
 
         -- Play Audio

@@ -10,6 +10,9 @@ local ui = {};
 
 local function filter_ventures(ventures)
     local selected_pool = config.get('venture_pool_filter') or 'All';
+    if config.get('hide_pool_tabs') then
+        selected_pool = 'All';
+    end
     if selected_pool == 'All' then
         return ventures;
     end
@@ -27,6 +30,10 @@ local function filter_ventures(ventures)
 end
 
 local function draw_pool_filter_tabs()
+    if config.get('hide_pool_tabs') then
+        return;
+    end
+
     local selected_pool = config.get('venture_pool_filter') or 'All';
     local tabs = {
         { label = 'All Pools', value = 'All' },
