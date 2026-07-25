@@ -15,6 +15,7 @@ local default_settings = T{
     slow_indicator = '=';
     notes_visible = false;
     show_equipment_column = false;
+    show_completion_bar = false;
     use_global_imgui_style = false;
     level_range_label = 'Level Range';
     area_label = 'Area';

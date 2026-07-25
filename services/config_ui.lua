@@ -82,6 +82,12 @@ function config_ui:draw()
             config.set('show_equipment_column', show_equipment_column[1])
         end
 
+        -- Completion Bar Toggle
+        local show_completion_bar = { config.get('show_completion_bar') }
+        if imgui.Checkbox('Show Completion Bar', show_completion_bar) then
+            config.set('show_completion_bar', show_completion_bar[1])
+        end
+
         -- Global ImGui Style Toggle
         local use_global_imgui_style = { config.get('use_global_imgui_style') }
         if imgui.Checkbox('Use Global ImGui Style', use_global_imgui_style) then

@@ -4,7 +4,7 @@ local config = require('configs.config');
 local rows = {};
 
 local SPAWN_SECONDS = 600; -- NM spawns 10 minutes after completion hits 100%
-local SPAWN_BAR_HEIGHT = 15;
+local BAR_HEIGHT = 15;
 local ORANGE_ABOVE_THRESHOLD = { 1.0, 0.5, 0.0, 1.0 };
 local ORANGE_FILL = { 1.0, 0.5, 0.0, 0.2 };
 local GREEN_BELOW_THRESHOLD = { 0.5, 1.0, 0.5, 1.0 };
@@ -22,22 +22,31 @@ local function get_spawn_remaining(venture)
     return remaining;
 end
 
--- Countdown text with a thin green bar behind it, spanning the column
+-- Thin fill bar spanning the column, drawn behind the row text.
+-- Leaves the cursor where it started so the caller can draw over it.
+local function draw_fill_bar(fraction, color)
+    local start_x, start_y = imgui.GetCursorPosX(), imgui.GetCursorPosY();
+    local _, text_h = imgui.CalcTextSize('0');
+
+    imgui.SetCursorPos({ start_x, start_y + text_h - BAR_HEIGHT - 2 });
+    imgui.PushStyleColor(ImGuiCol_PlotHistogram, color);
+    imgui.PushStyleColor(ImGuiCol_FrameBg, { 0.0, 0.0, 0.0, 0.0 }); -- no track, fill only
+    imgui.PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
+    imgui.PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+    imgui.ProgressBar(fraction, { -1, BAR_HEIGHT }, '');
+    imgui.PopStyleVar(2);
+    imgui.PopStyleColor(2);
+
+    imgui.SetCursorPos({ start_x, start_y });
+    return start_x, start_y;
+end
+
+-- Countdown text with the spawn timer bar behind it
 local function draw_spawn_bar(remaining)
     local label = string.format('%d:%02d', math.floor(remaining / 60), remaining % 60);
     -- Line the countdown up with where the '#%' text normally starts
     local indent = imgui.CalcTextSize((config.get('stopped_indicator') or 'x') .. '  ');
-    local start_x, start_y = imgui.GetCursorPosX(), imgui.GetCursorPosY();
-    local _, text_h = imgui.CalcTextSize(label);
-
-    imgui.SetCursorPos({ start_x, start_y + text_h - SPAWN_BAR_HEIGHT - 2 });
-    imgui.PushStyleColor(ImGuiCol_PlotHistogram, ORANGE_FILL);
-    imgui.PushStyleColor(ImGuiCol_FrameBg, { 0.0, 0.0, 0.0, 0.0 }); -- no track, fill only
-    imgui.PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
-    imgui.PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
-    imgui.ProgressBar(1 - (remaining / SPAWN_SECONDS), { -1, SPAWN_BAR_HEIGHT }, '');
-    imgui.PopStyleVar(2);
-    imgui.PopStyleColor(2);
+    local start_x, start_y = draw_fill_bar(1 - (remaining / SPAWN_SECONDS), ORANGE_FILL);
 
     imgui.SetCursorPos({ start_x + indent, start_y });
     imgui.PushStyleColor(ImGuiCol_Text, ORANGE_ABOVE_THRESHOLD);
@@ -111,6 +120,10 @@ function rows:draw_venture_row(venture)
     if spawn_remaining then
         draw_spawn_bar(spawn_remaining);
     else
+        if config.get('show_completion_bar') then
+            draw_fill_bar(completion / 100, completion >= alert_threshold and ORANGE_FILL or GREEN_FILL);
+        end
+
         -- Draw indicator first
         imgui.PushStyleColor(ImGuiCol_Text, time_color);
         imgui.TextUnformatted(indicator);
