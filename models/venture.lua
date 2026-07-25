@@ -47,10 +47,12 @@ function Venture:update(data)
         self.last_increment_time = 0;
     end
 
-    -- Record when completion reaches 100% (NM spawns 10 minutes later)
+    -- Record when completion reaches 100% (NM spawns 10 minutes later).
+    -- Completion resets to 0 once the venture rolls over, so the stamp has to
+    -- survive the drop until the 10 minutes are actually up.
     if new_completion >= 100 and self.completion < 100 then
         self.hit_100_time = now;
-    elseif new_completion < 100 then
+    elseif self.hit_100_time ~= 0 and now - self.hit_100_time >= 600 then
         self.hit_100_time = 0;
     end
     self.pool = data.pool or self.pool;

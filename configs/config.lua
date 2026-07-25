@@ -23,8 +23,6 @@ local default_settings = T{
     show_hvnm_title = true;
     venture_mode = 'ACE';
     venture_pool_filter = 'All';
-    test_progress_bar = false;      -- temporary: fake 100% venture to test the spawn bar
-    test_progress_bar_time = 0;
 };
 
 local settings = require('settings');

@@ -6,31 +6,7 @@ local sorter = require('services.sorter');
 local rows = require('ui.rows');
 local sort_button = require('ui.sort_button');
 local headers = require('ui.headers');
-local Venture = require('models.venture');
 local ui = {};
-
--- TEMPORARY: fake venture pinned to the top, stuck at 100% so the spawn
--- countdown bar can be checked without waiting on a real venture.
-local test_venture;
-local function prepend_test_venture(ventures)
-    if not test_venture then
-        test_venture = Venture:new({
-            pool = 'T',
-            level_range = 'TEST',
-            area = 'Test Zone',
-            completion = 100,
-            loc = '(A-1)',
-            notes = 'Test progress bar'
-        });
-    end
-    test_venture.hit_100_time = config.get('test_progress_bar_time') or 0;
-
-    local list = { test_venture };
-    for _, v in ipairs(ventures) do
-        list[#list + 1] = v;
-    end
-    return list;
-end
 
 local function filter_ventures(ventures)
     local selected_pool = config.get('venture_pool_filter') or 'All';
@@ -118,10 +94,6 @@ function ui:draw(ventures)
         imgui.Separator();
 
         imgui.Columns(config.get('show_equipment_column') and 5 or 4);
-
-        if config.get('test_progress_bar') then
-            ventures = prepend_test_venture(ventures);
-        end
 
         headers:draw();
         rows:draw(ventures);
