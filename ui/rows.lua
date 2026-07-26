@@ -124,8 +124,8 @@ function rows:draw_venture_row(venture)
         draw_spawn_bar('KILL', 1, RED_FILL, RED_SPAWNED);
     elseif completion >= 100 then
         -- At 100% with no stamp: hit 100% before the addon saw it, so the
-        -- spawn time is unknown. Empty bar, placeholder countdown.
-        draw_spawn_bar('?:??', 0, ORANGE_FILL, ORANGE_ABOVE_THRESHOLD);
+        -- spawn time is unknown. Full bar, placeholder countdown.
+        draw_spawn_bar('?:??', 1, ORANGE_FILL, ORANGE_ABOVE_THRESHOLD);
         if imgui.IsItemHovered() then
             imgui.BeginTooltip();
             imgui.TextUnformatted('Unknown spawn timer in progress.');
