@@ -64,7 +64,7 @@ data/vnms.lua
 
 The main window includes:
 
-- `Mode` dropdown: switch between `ACE` and `CW`.
+- `ACE Mode` / `CW Mode` button: click to toggle between the two modes.
 - Pool tabs: `All Pools`, `Pool A`, and `Pool B`.
 - Sortable columns for level range, area, and completion.
 - Optional equipment column.
