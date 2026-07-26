@@ -1,3 +1,6 @@
+-- Keep in sync with SPAWN_SECONDS in ui/rows.lua
+local SPAWN_SECONDS = 600; -- NM spawns 10 minutes after completion hits 100%
+
 local Venture = {
     pool = '',
     level_range = '',
@@ -52,7 +55,7 @@ function Venture:update(data)
     -- survive the drop until the 10 minutes are actually up.
     if new_completion >= 100 and self.completion < 100 then
         self.hit_100_time = now;
-    elseif self.hit_100_time ~= 0 and new_completion < 100 and now - self.hit_100_time >= 600 then
+    elseif self.hit_100_time ~= 0 and new_completion < 100 and now - self.hit_100_time >= SPAWN_SECONDS then
         -- Only drop the stamp once the spawn window is over AND the venture has
         -- rolled over; until then the row keeps showing the countdown or KILL.
         self.hit_100_time = 0;

@@ -112,8 +112,7 @@ function rows:draw_venture_row(venture)
 
     -- Completion with time indicator, or the spawn countdown bar at 100%
     local completion = tonumber(venture:get_completion()) or 0
-    local alert_threshold = tonumber(config.alert_threshold) or 90
-    local indicator, time_color = get_indicator_and_color(venture);
+    local alert_threshold = tonumber(config.get('alert_threshold')) or 90
     local spawn_remaining = get_spawn_remaining(venture);
 
     if spawn_remaining and spawn_remaining > 0 then
@@ -137,6 +136,7 @@ function rows:draw_venture_row(venture)
         end
 
         -- Draw indicator first
+        local indicator, time_color = get_indicator_and_color(venture);
         imgui.PushStyleColor(ImGuiCol_Text, time_color);
         imgui.TextUnformatted(indicator);
         imgui.PopStyleColor();
