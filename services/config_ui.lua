@@ -47,14 +47,16 @@ function config_ui:draw()
             config.set('show_gui', gui[1]);
         end
 
-        local mode = string.upper(config.get('venture_mode') or 'ACE');
-        -- ponytail: size to the widest label so the button never resizes on toggle
-        local mode_button_width = imgui.CalcTextSize('ACE Mode') + 16;
+        local venture_modes = { ACE = 0, CW = 1 };
+        local selected_mode = venture_modes[string.upper(config.get('venture_mode') or 'ACE')] or 0;
+        local mode_combo = { selected_mode };
 
-        if imgui.Button(mode .. ' Mode', { mode_button_width, 0 }) then
-            config.set('venture_mode', mode == 'ACE' and 'CW' or 'ACE');
+        imgui.PushItemWidth(120);
+        if imgui.Combo('Venture Mode', mode_combo, 'ACE\0CW\0', 2) then
+            config.set('venture_mode', mode_combo[1] == 1 and 'CW' or 'ACE');
             parser:refresh_venture_mode();
         end
+        imgui.PopItemWidth();
 
         -- Show Alerts
         local alerts = { config.get('enable_alerts') };
