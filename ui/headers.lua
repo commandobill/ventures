@@ -25,6 +25,10 @@ function headers:draw()
         imgui.Text('Equipment');
         imgui.NextColumn();
     end
+    if config.get('show_crest_column') then
+        imgui.Text('Crest');
+        imgui.NextColumn();
+    end
     sort_button:draw_sort_button(config.get('completion_label') or 'Completion', 'completion');
     imgui.NextColumn();
     headers:draw_location_header();

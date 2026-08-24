@@ -4,6 +4,7 @@ local config_ui = {};
 local chat = require('chat');
 local parser = require('services.parser');
 
+
 -- Preload sounds
 local function load_sounds()
     local folder = AshitaCore:GetInstallPath() .. '/addons/' .. addon.name .. '/sounds/';
@@ -23,12 +24,135 @@ end
 
 local sound_files, sound_labels = load_sounds();
 
+local function draw_equipment_filter()
+    imgui.Separator();
+
+    local filter_enabled = { config.get('show_equipment_filter') };
+    if imgui.Checkbox('Filter by Needed Equipment', filter_enabled) then
+        config.set('show_equipment_filter', filter_enabled[1]);
+    end
+
+    if not filter_enabled[1] then
+        return;
+    end
+
+    imgui.Indent();
+    imgui.TextDisabled('Check the equipment you still need.');
+	imgui.TextDisabled('Only zones dropping a checked item will be shown.');
+
+    local needed = config.get('needed_equipment') or {};
+    local options = parser:get_equipment_options();
+
+    local function draw_checkbox(label)
+        local checked = { needed[label] == true };
+        if imgui.Checkbox('##eq_' .. label, checked) then
+            local current = config.get('needed_equipment') or {};
+            if checked[1] then
+                current[label] = true;
+            else
+                current[label] = nil;
+            end
+            config.set('needed_equipment', current);
+        end
+    end
+
+    local all_checked = true;
+    for _, label in ipairs(options) do
+        if needed[label] ~= true then
+            all_checked = false;
+            break;
+        end
+    end
+
+    if imgui.Button(all_checked and 'Uncheck All' or 'Check All') then
+        local current = config.get('needed_equipment') or {};
+        local new_value = not all_checked;
+        for _, label in ipairs(options) do
+            current[label] = new_value or nil;
+        end
+        config.set('needed_equipment', current);
+        needed = current;
+    end
+
+    imgui.Separator();
+
+    for _, label in ipairs(options) do
+        draw_checkbox(label);
+        imgui.SameLine();
+        imgui.Text(label);
+    end
+
+    imgui.Unindent();
+end
+
+local function draw_crest_filter()
+    imgui.Separator();
+
+    local filter_enabled = { config.get('show_crest_filter') };
+    if imgui.Checkbox('Filter by Needed Crest', filter_enabled) then
+        config.set('show_crest_filter', filter_enabled[1]);
+    end
+
+    if not filter_enabled[1] then
+        return;
+    end
+
+    imgui.Indent();
+    imgui.TextDisabled('Check the crest types you still need.');
+    imgui.TextDisabled('Only zones dropping a checked crest will be shown.');
+
+    local needed = config.get('needed_crest') or {};
+    local options = parser:get_crest_options();
+
+    local function draw_checkbox(label)
+        local checked = { needed[label] == true };
+        if imgui.Checkbox('##crest_' .. label, checked) then
+            local current = config.get('needed_crest') or {};
+            if checked[1] then
+                current[label] = true;
+            else
+                current[label] = nil;
+            end
+            config.set('needed_crest', current);
+        end
+    end
+
+    local all_checked = true;
+    for _, label in ipairs(options) do
+        if needed[label] ~= true then
+            all_checked = false;
+            break;
+        end
+    end
+
+    if imgui.Button(all_checked and 'Uncheck All##crest' or 'Check All##crest') then
+        local current = config.get('needed_crest') or {};
+        local new_value = not all_checked;
+        for _, label in ipairs(options) do
+            current[label] = new_value or nil;
+        end
+        config.set('needed_crest', current);
+        needed = current;
+    end
+
+    imgui.Separator();
+
+    for _, label in ipairs(options) do
+        draw_checkbox(label);
+        imgui.SameLine();
+        imgui.Text(label);
+    end
+
+    imgui.Unindent();
+end
+
 -- Draw main window
 function config_ui:draw()
     if not config.get('show_config_gui') then
         return;
     end
     --imgui.SetNextWindowSize({400, 400}, ImGuiCond_FirstUseEver);
+	imgui.SetNextWindowSizeConstraints({0, 0}, {FLT_MAX, 700});
     local open = { config.get('show_config_gui') };
     local use_global_imgui_style = config.get('use_global_imgui_style');
 
@@ -47,13 +171,16 @@ function config_ui:draw()
             config.set('show_gui', gui[1]);
         end
 
-        local venture_modes = { ACE = 0, CW = 1 };
+        local venture_modes = { ACE = 0, CW = 1, ALL = 2 };
         local selected_mode = venture_modes[string.upper(config.get('venture_mode') or 'ACE')] or 0;
         local mode_combo = { selected_mode };
 
         imgui.PushItemWidth(120);
-        if imgui.Combo('Venture Mode', mode_combo, 'ACE\0CW\0', 2) then
-            config.set('venture_mode', mode_combo[1] == 1 and 'CW' or 'ACE');
+        if imgui.Combo('Venture Mode', mode_combo, 'ACE\0CW\0All\0', 3) then
+            local new_mode = 'ACE';
+            if mode_combo[1] == 1 then new_mode = 'CW';
+            elseif mode_combo[1] == 2 then new_mode = 'All'; end
+            config.set('venture_mode', new_mode);
             parser:refresh_venture_mode();
         end
         imgui.PopItemWidth();
@@ -75,12 +202,21 @@ function config_ui:draw()
         if imgui.Checkbox('Show Notes as Tooltip', notes_visible) then
             config.set('notes_visible', notes_visible[1])
         end
-
-        -- Equipment Column Toggle
+		
+		-- Equipment Column Toggle
         local show_equipment_column = { config.get('show_equipment_column') }
         if imgui.Checkbox('Show Equipment Column', show_equipment_column) then
             config.set('show_equipment_column', show_equipment_column[1])
         end
+		
+		-- Crest Column Toggle
+        local show_crest_column = { config.get('show_crest_column') }
+        if imgui.Checkbox('Show Crest Column', show_crest_column) then
+            config.set('show_crest_column', show_crest_column[1])
+        end
+
+        draw_equipment_filter();
+		draw_crest_filter();
 
         -- Global ImGui Style Toggle
         local use_global_imgui_style = { config.get('use_global_imgui_style') }
