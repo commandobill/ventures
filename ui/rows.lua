@@ -59,6 +59,12 @@ function rows:draw_venture_row(venture)
         imgui.NextColumn();
     end
 
+    if config.get('show_crest_column') then
+        local crest = venture:get_crest() or '';
+        imgui.Text((crest:gsub('%s*Crest%s*$', '')));
+        imgui.NextColumn();
+    end
+
     -- Completion with time indicator
     local completion = tonumber(venture:get_completion()) or 0
     local alert_threshold = tonumber(config.alert_threshold) or 90

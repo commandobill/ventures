@@ -3,6 +3,8 @@ local vnm_loader = require('services.vnm_loader');
 local vnm_data = vnm_loader:load();
 local zone_names = require('data.zones');
 local config = require('configs.config');
+local equipment_options_cache = nil;
+local crest_options_cache = nil;
 
 local parser = {
     parsed_ventures = {},
@@ -84,6 +86,9 @@ function parser:parse_venture_packet(data)
     self.last_packet_data = data;
 
     local venture_mode = string.upper(config.get('venture_mode') or 'ACE');
+	if venture_mode == 'ALL' then
+    venture_mode = 'ACE';
+	end
     local tier_names = { '10-19', '20-29', '30-39', '40-49', '50-59', '60-69' };
     local pool_names = { 'A', 'B' };
     local existing = build_existing_lookup(self.parsed_ventures);
@@ -151,6 +156,9 @@ end
 
 function parser:refresh_venture_mode()
     local venture_mode = string.upper(config.get('venture_mode') or 'ACE');
+	if venture_mode == 'ALL' then
+    venture_mode = 'ACE';
+	end
     local applied_cached_mode = false;
 
     for _, v in ipairs(self.parsed_ventures or {}) do
@@ -178,6 +186,54 @@ end
 
 function parser:reload_vnm_data()
     vnm_data = vnm_loader:load();
+	equipment_options_cache = nil;
+	crest_options_cache = nil;
+end
+
+function parser:get_equipment_options()
+    if equipment_options_cache then
+        return equipment_options_cache;
+    end
+
+    local seen = {};
+    local options = {};
+
+    for _, zone_entries in pairs(vnm_data) do
+        for _, vnm in ipairs(zone_entries) do
+            local equipment = vnm.equipment;
+            if equipment and equipment ~= '' and not seen[equipment] then
+                seen[equipment] = true;
+                table.insert(options, equipment);
+            end
+        end
+    end
+
+    table.sort(options);
+    equipment_options_cache = options;
+    return equipment_options_cache;
+end
+
+function parser:get_crest_options()
+    if crest_options_cache then
+        return crest_options_cache;
+    end
+
+    local seen = {};
+    local options = {};
+
+    for _, zone_entries in pairs(vnm_data) do
+        for _, vnm in ipairs(zone_entries) do
+            local crest = vnm.crest;
+            if crest and crest ~= '' and not seen[crest] then
+                seen[crest] = true;
+                table.insert(options, crest);
+            end
+        end
+    end
+
+    table.sort(options);
+    crest_options_cache = options;
+    return crest_options_cache;
 end
 
 -- Get parsed ventures

@@ -23,6 +23,11 @@ local default_settings = T{
     show_hvnm_title = true;
     venture_mode = 'ACE';
     venture_pool_filter = 'All';
+	show_equipment_filter = false;
+    needed_equipment = T{};
+	show_crest_filter = false;
+    needed_crest = T{};
+	show_crest_column = false;
 };
 
 local settings = require('settings');
