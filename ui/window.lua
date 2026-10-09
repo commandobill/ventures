@@ -76,22 +76,19 @@ function ui:draw(ventures)
 
     if imgui.Begin(window_title, open) then
         -- Set window styles
-        local venture_modes = { ACE = 0, CW = 1 };
-        local selected_mode = venture_modes[string.upper(config.get('venture_mode') or 'ACE')] or 0;
-        local combo = { selected_mode };
+        local mode = string.upper(config.get('venture_mode') or 'ACE');
+        -- ponytail: size to the widest label so the button never resizes on toggle
+        local mode_button_width = imgui.CalcTextSize('ACE Mode') + 16;
 
-        imgui.PushItemWidth(90);
-        if imgui.Combo('Mode', combo, 'ACE\0CW\0', 2) then
-            config.set('venture_mode', combo[1] == 1 and 'CW' or 'ACE');
+        if imgui.Button(mode .. ' Mode', { mode_button_width, 0 }) then
+            config.set('venture_mode', mode == 'ACE' and 'CW' or 'ACE');
             ventures = parser:refresh_venture_mode();
             ventures = filter_ventures(ventures);
             ventures = sorter:sort(ventures);
         end
-        imgui.PopItemWidth();
 
+        imgui.SameLine();
         draw_pool_filter_tabs();
-
-        imgui.Separator();
 
         imgui.Columns(config.get('show_equipment_column') and 5 or 4);
 

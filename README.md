@@ -18,6 +18,8 @@ The addon listens for the incoming `0x1A3` venture packet, converts zone IDs int
 - Alerts when a venture crosses the configured completion threshold.
 - Plays an optional sound alert at a separate audio threshold.
 - Tracks whether progress has recently increased with configurable row indicators.
+- Optional completion bar drawn behind the completion column.
+- Counts down the 10 minute NM spawn window once a venture reaches 100%, then shows `KILL`.
 - Downloads updated VNM metadata from GitHub on load, with a bundled fallback.
 - Includes a settings window for GUI, alert, audio, sorting, label, and display options.
 
@@ -64,9 +66,10 @@ data/vnms.lua
 
 The main window includes:
 
-- `Mode` dropdown: switch between `ACE` and `CW`.
+- `ACE Mode` / `CW Mode` button: click to toggle between the two modes.
 - Pool tabs: `All Pools`, `Pool A`, and `Pool B`.
 - Sortable columns for level range, area, and completion.
+- Spawn countdown: at 100% the completion cell shows `M:SS` until the NM is up, then `KILL`. A venture already at 100% when the addon starts shows `?:??`, since its spawn time is unknown.
 - Optional equipment column.
 - Location and notes display, with optional tooltip behavior.
 - A collapsed title summary based on the highest visible completion.
@@ -83,6 +86,7 @@ The configuration window includes options for:
 - Showing HVNM in the collapsed title.
 - Showing notes as tooltips.
 - Showing the optional equipment column.
+- Showing the completion bar behind the completion column.
 - Hiding extra sorting text.
 - Enabling audio alerts and selecting a sound.
 - Setting chat and audio alert thresholds.
