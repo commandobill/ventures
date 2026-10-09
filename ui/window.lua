@@ -107,7 +107,10 @@ function ui:draw(ventures)
         imgui.PopStyleColor(4);
     end
     imgui.End();
-    config.set('show_gui', open[1])
+    -- Only save when the window was closed: config.set writes the settings file, and this runs every frame.
+    if open[1] ~= config.get('show_gui') then
+        config.set('show_gui', open[1]);
+    end
 end
 
 return ui;

@@ -186,7 +186,10 @@ function config_ui:draw()
         imgui.PopStyleColor(4);
     end
     imgui.End();
-    config.set('show_config_gui', open[1])
+    -- Only save when the window was closed: config.set writes the settings file, and this runs every frame.
+    if open[1] ~= config.get('show_config_gui') then
+        config.set('show_config_gui', open[1]);
+    end
 end
 
 return config_ui;
