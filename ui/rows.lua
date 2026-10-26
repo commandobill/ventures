@@ -1,7 +1,26 @@
 local imgui = require('imgui');
 local config = require('configs.config');
 
+local ffi = require('ffi');
+local d3d = require('d3d8');
+
 local rows = {};
+
+-- 'Area level_range' -> texture (false = no map); files are VNM_locations/<Area> <level_range>.jpg, e.g. 'Batallia Downs HVNM.jpg'
+local maps = {};
+local function get_map(venture)
+    local key = string.format('%s %s', venture:get_area(), venture:get_level_range());
+    if maps[key] == nil then
+        maps[key] = false;
+        local path = string.format('%s/VNM_locations/%s.jpg', addon.path, key);
+        local ptr = ffi.new('IDirect3DTexture8*[1]');
+        if ashita.fs.exists(path) and ffi.C.D3DXCreateTextureFromFileA(d3d.get_device(), path, ptr) == ffi.C.S_OK then
+            maps[key] = d3d.gc_safe_release(ffi.cast('IDirect3DTexture8*', ptr[0]));
+        end
+    end
+    return maps[key];
+end
+
 local function format_completion(value)
     local completion = tonumber(value) or 0
     if completion == math.floor(completion) then
@@ -100,6 +119,14 @@ function rows:draw_venture_row(venture)
     end
     imgui.TextUnformatted(format_completion(completion) .. '%');
     imgui.PopStyleColor();
+    if imgui.IsItemHovered() then
+        local map = get_map(venture);
+        if map then
+            imgui.BeginTooltip();
+            imgui.Image(tonumber(ffi.cast('uint32_t', map)), { 512, 512 });
+            imgui.EndTooltip();
+        end
+    end
     imgui.NextColumn();
 
     -- Location and Notes
